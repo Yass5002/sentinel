@@ -79,14 +79,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       style: TextStyle(
                         fontFamily: 'SentinelBrand',
                         fontSize: 80,
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'NO EVENT CREATED YET',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         letterSpacing: 1.5,
                       ),
                     ),
@@ -129,7 +129,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           error: (err, stack) => Center(
             child: Text(
               'Failed to load events',
-              style: TextStyle(color: Colors.red.withOpacity(0.7)),
+              style: TextStyle(color: Colors.red.withValues(alpha: 0.7)),
             ),
           ),
         ),

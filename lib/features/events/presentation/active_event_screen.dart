@@ -210,7 +210,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                 child: Text(
                   'RECIPIENTS',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
@@ -265,7 +265,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                 child: Text(
                   'DETAILS',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,

@@ -57,7 +57,7 @@ class AppDrawer extends ConsumerWidget {
                 Text(
                   user?.email ?? '',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 14,
                   ),
                 ),
@@ -91,7 +91,10 @@ class AppDrawer extends ConsumerWidget {
                   icon: Icons.settings_sharp,
                   label: 'SETTINGS',
                   isActive: false,
-                  onTap: () {}, // TODO
+                  onTap: () {
+                    context.pop();
+                    context.push('/settings');
+                  },
                 ),
               ],
             ),
@@ -141,12 +144,12 @@ class AppDrawer extends ConsumerWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+          color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
         ),
         title: Text(
           label,
           style: TextStyle(
-            color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+            color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
             letterSpacing: 1.0,
           ),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentinel/features/files/data/file_repository.dart';
 import 'package:sentinel/features/files/domain/file_model.dart';
+import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/data/event_repository.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -130,28 +131,28 @@ class CreateEventNotifier extends _$CreateEventNotifier {
     }
   }
 
-  Future<bool> createEvent() async {
+  Future<Event?> createEvent() async {
     if (state.name.isEmpty) {
       state = state.copyWith(error: 'Event name is required');
-      return false;
+      return null;
     }
 
     final durationMs = _calculateDurationMs();
     if (durationMs < 30000) {
       // Min 30 seconds
       state = state.copyWith(error: 'Timer must be at least 30 seconds');
-      return false;
+      return null;
     }
 
     if (state.selectedContacts.isEmpty) {
       state = state.copyWith(error: 'At least one contact is required');
-      return false;
+      return null;
     }
 
     state = state.copyWith(isSubmitting: true, error: null);
 
     try {
-      await ref
+      final event = await ref
           .read(eventRepositoryProvider)
           .createEvent(
             name: state.name,
@@ -163,10 +164,10 @@ class CreateEventNotifier extends _$CreateEventNotifier {
       state = state.copyWith(isSubmitting: false);
       // Refresh Home Screen
       ref.invalidate(eventListProvider);
-      return true;
+      return event;
     } catch (e) {
       state = state.copyWith(isSubmitting: false, error: e.toString());
-      return false;
+      return null;
     }
   }
 }

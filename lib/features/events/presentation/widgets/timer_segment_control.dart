@@ -93,7 +93,7 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white.withOpacity(0.5),
+            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
             fontWeight: FontWeight.bold,
             letterSpacing: 1.0,
           ),
@@ -167,7 +167,7 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               fontSize: 24,
               fontFamily: 'Courier',
             ),

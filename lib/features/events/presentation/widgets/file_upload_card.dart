@@ -19,7 +19,7 @@ class FileUploadCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             child: const Icon(
               Icons.insert_drive_file_sharp,
               color: Colors.white,
@@ -64,7 +64,7 @@ class FileUploadProgressCard extends StatelessWidget {
               Container(
                 width: 48,
                 height: 48,
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 child: const SizedBox(
                   width: 24,
                   height: 24,
@@ -80,7 +80,7 @@ class FileUploadProgressCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   filename,
-                  style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

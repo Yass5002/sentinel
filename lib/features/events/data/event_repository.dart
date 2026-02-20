@@ -51,7 +51,7 @@ class EventRepository {
     }
   }
 
-  Future<void> createEvent({
+  Future<Event> createEvent({
     required String name,
     String? message,
     required int durationMs,
@@ -59,7 +59,7 @@ class EventRepository {
     List<String>? fileIds,
   }) async {
     try {
-      await _dio.post(
+      final response = await _dio.post(
         '/events',
         data: {
           'name': name,
@@ -69,6 +69,7 @@ class EventRepository {
           'file_ids': fileIds,
         },
       );
+      return Event.fromJson(response.data);
     } catch (e) {
       if (e is DioException) {
         throw Exception(e.response?.data['error'] ?? 'Failed to create event');

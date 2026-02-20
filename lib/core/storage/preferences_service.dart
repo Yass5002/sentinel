@@ -19,6 +19,14 @@ class PreferencesService {
   static const _keyThemeMode = 'theme_mode';
   static const _keyNotificationsEnabled = 'notifications_enabled';
 
+  static const _keyNotificationPermissionDenied =
+      'notification_permission_denied';
+  static const _keyNotificationPermissionDeferred =
+      'notification_permission_deferred';
+  static const _keyNotificationPermissionDismissedPermanently =
+      'notification_permission_dismissed_permanently';
+  static const _keyDeferralCount = 'notification_deferral_count';
+
   ThemeMode getThemeMode() {
     final modeString = _prefs.getString(_keyThemeMode);
     if (modeString == 'ThemeMode.light') return ThemeMode.light;
@@ -30,10 +38,35 @@ class PreferencesService {
     await _prefs.setString(_keyThemeMode, mode.toString());
   }
 
+  // F12: Default to false — notifications are only enabled after explicit user consent.
   bool get notificationsEnabled =>
-      _prefs.getBool(_keyNotificationsEnabled) ?? true;
+      _prefs.getBool(_keyNotificationsEnabled) ?? false;
 
   Future<void> setNotificationsEnabled(bool enabled) async {
     await _prefs.setBool(_keyNotificationsEnabled, enabled);
+  }
+
+  bool get notificationPermissionDenied =>
+      _prefs.getBool(_keyNotificationPermissionDenied) ?? false;
+  Future<void> setNotificationPermissionDenied(bool value) async {
+    await _prefs.setBool(_keyNotificationPermissionDenied, value);
+  }
+
+  bool get notificationPermissionDeferred =>
+      _prefs.getBool(_keyNotificationPermissionDeferred) ?? false;
+  Future<void> setNotificationPermissionDeferred(bool value) async {
+    await _prefs.setBool(_keyNotificationPermissionDeferred, value);
+  }
+
+  bool get notificationPermissionDismissedPermanently =>
+      _prefs.getBool(_keyNotificationPermissionDismissedPermanently) ?? false;
+  Future<void> setNotificationPermissionDismissedPermanently(bool value) async {
+    await _prefs.setBool(_keyNotificationPermissionDismissedPermanently, value);
+  }
+
+  int get deferralCount => _prefs.getInt(_keyDeferralCount) ?? 0;
+  Future<void> incrementDeferralCount() async {
+    final current = deferralCount;
+    await _prefs.setInt(_keyDeferralCount, current + 1);
   }
 }

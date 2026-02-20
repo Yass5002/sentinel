@@ -217,7 +217,7 @@ class EventDetailScreen extends ConsumerWidget {
                                   Text(
                                     _formatBytes(file.fileSize),
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Colors.white.withValues(alpha: 0.5),
                                       fontSize: 12,
                                       fontFamily: 'Courier',
                                     ),
@@ -235,7 +235,7 @@ class EventDetailScreen extends ConsumerWidget {
                         child: Text(
                           'CREATED ${DateFormat('MMM d, yyyy · HH:mm').format(event.createdAt).toUpperCase()}',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontFamily: 'Courier',
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -321,7 +321,7 @@ class EventDetailScreen extends ConsumerWidget {
       child: Text(
         title,
         style: TextStyle(
-          color: Colors.white.withOpacity(0.5),
+          color: Colors.white.withValues(alpha: 0.5),
           fontSize: 12,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
@@ -358,7 +358,7 @@ class EventDetailScreen extends ConsumerWidget {
           Text(
             email,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: 10,
             ),
             maxLines: 1,

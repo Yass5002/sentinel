@@ -9,6 +9,12 @@ import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/presentation/widgets/contact_picker.dart';
 import 'package:sentinel/features/events/presentation/widgets/file_upload_card.dart';
 import 'package:sentinel/features/events/presentation/widgets/timer_segment_control.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sentinel/core/services/notification_service.dart';
+import 'package:sentinel/core/services/native_timer_service.dart';
+import 'package:sentinel/core/storage/preferences_service.dart';
+import 'package:sentinel/core/time/time_sync_provider.dart';
+import 'package:sentinel/features/events/domain/event_model.dart';
 
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({super.key});
@@ -20,6 +26,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
 class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
+  bool _isNavigating = false;
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
@@ -30,14 +37,148 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   void _submit() async {
-    final success = await ref
+    if (_isNavigating) return;
+
+    final event = await ref
         .read(createEventNotifierProvider.notifier)
         .createEvent();
-    if (success && mounted) {
+
+    if (event != null && mounted) {
+      setState(() {
+        _isNavigating = true; // Lock the button during primer/OS prompts
+      });
       // Refresh the Home Screen list
       ref.invalidate(eventListProvider);
-      context.pop(); // Go back to Home
+
+      await _handlePostCreation(event);
+
+      if (mounted) {
+        context.go('/'); // Safely route to Home using push replacement
+      }
     }
+  }
+
+  Future<void> _handlePostCreation(Event event) async {
+    final prefs = ref.read(preferencesServiceProvider);
+
+    if (!prefs.notificationPermissionDenied &&
+        !prefs.notificationPermissionDismissedPermanently) {
+      final status = await Permission.notification.status;
+      if (status.isDenied) {
+        if (!mounted) return;
+        final granted = await _showPrimerDialog();
+        if (granted) {
+          final newStatus = await Permission.notification.request();
+          if (newStatus.isPermanentlyDenied) {
+            await prefs.setNotificationPermissionDismissedPermanently(true);
+            await prefs.setNotificationsEnabled(false);
+          } else if (newStatus.isDenied) {
+            await prefs.setNotificationPermissionDenied(true);
+            await prefs.setNotificationsEnabled(false);
+          } else if (newStatus.isGranted || newStatus.isProvisional) {
+            await prefs.setNotificationsEnabled(true);
+          }
+        } else {
+          await prefs.incrementDeferralCount();
+          if (prefs.deferralCount >= 3) {
+            await prefs.setNotificationPermissionDeferred(true);
+          }
+        }
+      }
+    }
+
+    final postStatus = await Permission.notification.status;
+    if ((postStatus.isGranted || postStatus.isProvisional) &&
+        prefs.notificationsEnabled) {
+      // F10: Request SCHEDULE_EXACT_ALARM independently of the primer flow.
+      // This runs every time notifications are enabled, catching the case where
+      // OS notification permission was already granted on a previous event.
+      if (Platform.isAndroid) {
+        final exactStatus = await Permission.scheduleExactAlarm.status;
+        if (!exactStatus.isGranted) {
+          await Permission.scheduleExactAlarm.request();
+          // Note: On API 33+, this opens a Settings screen. The user may deny it.
+          // The notification_service gracefully falls back to inexact scheduling.
+        }
+      }
+
+      final timeSync = ref.read(timeSyncProvider);
+      await ref
+          .read(notificationServiceProvider)
+          .scheduleReminders(
+            eventId: event.id,
+            eventName: event.name,
+            expiresAt: event.expiresAt,
+            timeDelta: timeSync,
+          );
+
+      // Start native countdown precisely 5 minutes before event expires
+      final triggerAt = event.expiresAt.subtract(const Duration(minutes: 5));
+      await ref
+          .read(nativeTimerServiceProvider)
+          .startCountdown(
+            eventId: event.id,
+            eventName: event.name,
+            triggerAt: triggerAt,
+            expiresAt: event.expiresAt,
+            timeDelta: timeSync,
+          );
+    }
+  }
+
+  Future<bool> _showPrimerDialog() async {
+    bool granted = false;
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.darkSurface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero, // Sharp dialog box
+        ),
+        title: const Text(
+          'Never Miss a Check-in',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'Sentinel needs notification permissions to remind you before your Sentinels expire. '
+          'Without this, you won\'t receive the crucial 1hr, 15m, and 5m countdown alerts.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              granted = false;
+              Navigator.of(ctx).pop();
+            },
+            style: TextButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero, // Sharp button
+              ),
+            ),
+            child: const Text('Not Now', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              granted = true;
+              Navigator.of(ctx).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero, // Sharp button
+              ),
+            ),
+            child: const Text(
+              'Enable Notifications',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+    return granted;
   }
 
   @override
@@ -226,16 +367,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   SizedBox(
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: state.isSubmitting ? null : _submit,
+                      onPressed: (state.isSubmitting || _isNavigating)
+                          ? null
+                          : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryColor,
                         disabledBackgroundColor: AppTheme.primaryColor
-                            .withOpacity(0.5),
+                            .withValues(alpha: 0.5),
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
-                      child: state.isSubmitting
+                      child: (state.isSubmitting || _isNavigating)
                           ? const SizedBox(
                               width: 24,
                               height: 24,
@@ -273,7 +416,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
             ),
           ),
         ),

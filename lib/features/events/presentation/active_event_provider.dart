@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/features/events/data/event_repository.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
+import 'package:sentinel/core/services/notification_service.dart';
+import 'package:sentinel/core/services/native_timer_service.dart';
 
 class ActiveEventState {
   final AsyncValue<Event> event;
@@ -56,6 +58,13 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
     state = state.copyWith(isCheckingIn: true);
     try {
       await _repository.checkIn(_eventId);
+
+      // Cancel local reminders
+      await _ref.read(notificationServiceProvider).cancelReminders(_eventId);
+
+      // Cancel native countdown
+      await _ref.read(nativeTimerServiceProvider).cancelCountdown(_eventId);
+
       // Refresh home list
       _ref.invalidate(eventListProvider);
       return true;
@@ -72,6 +81,13 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
     state = state.copyWith(isCancelling: true);
     try {
       await _repository.cancelEvent(_eventId);
+
+      // Cancel local reminders
+      await _ref.read(notificationServiceProvider).cancelReminders(_eventId);
+
+      // Cancel native countdown
+      await _ref.read(nativeTimerServiceProvider).cancelCountdown(_eventId);
+
       // Refresh home list
       _ref.invalidate(eventListProvider);
       return true;

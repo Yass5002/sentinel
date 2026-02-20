@@ -9,6 +9,7 @@ import 'package:sentinel/features/events/presentation/create_event_screen.dart';
 import 'package:sentinel/features/events/presentation/active_event_screen.dart';
 import 'package:sentinel/features/events/presentation/event_detail_screen.dart';
 import 'package:sentinel/features/home/presentation/home_screen.dart';
+import 'package:sentinel/features/settings/presentation/settings_screen.dart';
 
 // Global Navigator Key
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -71,6 +72,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           return EventDetailScreen(eventId: id);
         },
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

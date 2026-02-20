@@ -71,13 +71,13 @@ class _EventCardState extends ConsumerState<EventCard> {
     }
 
     // Muted colors for inactive state
-    if (widget.event.checkedIn) return Colors.green.withOpacity(0.6);
-    if (widget.event.fired) return Colors.red.withOpacity(0.6);
+    if (widget.event.checkedIn) return Colors.green.withValues(alpha: 0.6);
+    if (widget.event.fired) return Colors.red.withValues(alpha: 0.6);
     // Terminated / Canceled / Expired defaults
-    if (widget.event.terminated) return Colors.grey.withOpacity(0.4);
+    if (widget.event.terminated) return Colors.grey.withValues(alpha: 0.4);
 
     // Default fallback for "Alert Sent" (expired locally but not fired yet)
-    return Colors.red.withOpacity(0.6);
+    return Colors.red.withValues(alpha: 0.6);
   }
 
   @override
@@ -108,8 +108,8 @@ class _EventCardState extends ConsumerState<EventCard> {
                           style: TextStyle(
                             color: _isActive
                                 ? Colors.white
-                                : Colors.white.withOpacity(
-                                    0.3,
+                                : Colors.white.withValues(
+                                    alpha: 0.3,
                                   ), // Much dimmer for inactive
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -153,7 +153,7 @@ class _EventCardState extends ConsumerState<EventCard> {
                         Text(
                           'Created ${timeago.format(widget.event.createdAt)}',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             fontSize: 12,
                           ),
                         ),
@@ -170,7 +170,7 @@ class _EventCardState extends ConsumerState<EventCard> {
                         Icons
                             .arrow_forward_ios_sharp, // Use sharp arrow if available or standard
                         size: 16,
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
