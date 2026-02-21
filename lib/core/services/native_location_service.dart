@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
+import 'package:sentinel/core/network/api_constants.dart';
 
 final nativeLocationServiceProvider = Provider<NativeLocationService>((ref) {
   return NativeLocationService(ref);
@@ -26,7 +27,10 @@ class NativeLocationService {
     }
 
     try {
-      await _channel.invokeMethod('startTracking', {'jwt': jwt});
+      await _channel.invokeMethod('startTracking', {
+        'jwt': jwt,
+        'baseUrl': ApiConstants.baseUrl,
+      });
     } on PlatformException catch (e) {
       dev.log('startTracking failed: ${e.message}', name: 'Location');
     }

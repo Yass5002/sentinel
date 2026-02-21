@@ -25,14 +25,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 class LocationTrackingService : Service() {
 
@@ -42,6 +37,7 @@ class LocationTrackingService : Service() {
         private const val NOTIFICATION_ID = 2001
         private const val PREFS_NAME = "sentinel_location_prefs"
         private const val KEY_JWT = "location_jwt"
+        private const val KEY_BASE_URL = "location_base_url"
         private const val MAX_RETRY_BUFFER = 5
 
         @Volatile
@@ -52,6 +48,7 @@ class LocationTrackingService : Service() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationCallback: LocationCallback? = null
     private var jwt: String? = null
+    private var baseUrl: String? = null
     private var httpClient: OkHttpClient? = null
     private var executor: ExecutorService? = null
     private var locationHandlerThread: HandlerThread? = null
@@ -77,17 +74,19 @@ class LocationTrackingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Extract JWT from intent or fall back to SharedPreferences (START_STICKY restart)
+        // Extract JWT and baseUrl from intent or fall back to SharedPreferences (START_STICKY restart)
         jwt = intent?.getStringExtra("jwt") ?: getStoredJwt()
+        baseUrl = intent?.getStringExtra("baseUrl") ?: getStoredBaseUrl()
 
-        if (jwt.isNullOrEmpty()) {
-            Log.w(TAG, "No JWT available — stopping service")
+        if (jwt.isNullOrEmpty() || baseUrl.isNullOrEmpty()) {
+            Log.w(TAG, "No JWT or Base URL available — stopping service")
             stopSelf()
             return START_NOT_STICKY
         }
 
-        // Persist JWT for START_STICKY restart scenario
+        // Persist JWT and baseUrl for START_STICKY restart scenario
         storeJwt(jwt!!)
+        storeBaseUrl(baseUrl!!)
 
         // If already running, this is idempotent — just update JWT
         if (isRunning) {
@@ -162,11 +161,12 @@ class LocationTrackingService : Service() {
 
     private fun postLocation(lat: Double, lng: Double, accuracy: Float) {
         val currentJwt = jwt ?: return
+        val currentUrl = baseUrl ?: return
         val client = httpClient ?: return
 
         executor?.submit {
             // First, try to flush any buffered failed locations
-            flushRetryBuffer(currentJwt, client)
+            flushRetryBuffer(currentJwt, currentUrl, client)
 
             try {
                 val json = JSONObject().apply {
@@ -179,7 +179,7 @@ class LocationTrackingService : Service() {
                     .toRequestBody("application/json; charset=utf-8".toMediaType())
 
                 val request = Request.Builder()
-                    .url("https://52.54.196.131/location")
+                    .url("$currentUrl/location")
                     .addHeader("Authorization", "Bearer $currentJwt")
                     .addHeader("Content-Type", "application/json")
                     .post(body)
@@ -221,7 +221,7 @@ class LocationTrackingService : Service() {
         }
     }
 
-    private fun flushRetryBuffer(currentJwt: String, client: OkHttpClient) {
+    private fun flushRetryBuffer(currentJwt: String, currentUrl: String, client: OkHttpClient) {
         val toRetry: List<LocationData>
         synchronized(retryBuffer) {
             if (retryBuffer.isEmpty()) return
@@ -241,7 +241,7 @@ class LocationTrackingService : Service() {
                     .toRequestBody("application/json; charset=utf-8".toMediaType())
 
                 val request = Request.Builder()
-                    .url("https://52.54.196.131/location")
+                    .url("$currentUrl/location")
                     .addHeader("Authorization", "Bearer $currentJwt")
                     .addHeader("Content-Type", "application/json")
                     .post(body)
@@ -361,31 +361,23 @@ class LocationTrackingService : Service() {
         return getPrefs().getString(KEY_JWT, null)
     }
 
-    fun clearStoredJwt() {
-        getPrefs().edit().remove(KEY_JWT).apply()
+    private fun storeBaseUrl(url: String) {
+        getPrefs().edit().putString(KEY_BASE_URL, url).apply()
     }
 
-    // --- OkHttp Client with Self-Signed Cert Trust ---
+    private fun getStoredBaseUrl(): String? {
+        return getPrefs().getString(KEY_BASE_URL, null)
+    }
 
-    // TODO: PRODUCTION — Replace trust-all-certs with proper certificate pinning.
-    // This currently trusts any certificate for the dev server at 52.54.196.131.
-    // For production, embed the server's public certificate and validate against it.
+    fun clearStoredJwt() {
+        getPrefs().edit().remove(KEY_JWT).apply()
+        getPrefs().edit().remove(KEY_BASE_URL).apply()
+    }
+
+    // --- OkHttp Client default ---
+
     private fun createHttpClient(): OkHttpClient {
-        val trustManager = object : X509TrustManager {
-            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
-            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        }
-
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, arrayOf<TrustManager>(trustManager), SecureRandom())
-
         return OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, trustManager)
-            .hostnameVerifier { hostname, _ ->
-                // Only trust the specific IP
-                hostname == "52.54.196.131"
-            }
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)

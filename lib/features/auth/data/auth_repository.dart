@@ -21,7 +21,12 @@ class AuthRepository {
       if (e.response?.statusCode == 429) {
         throw Exception('Please wait before requesting another code.');
       }
-      throw Exception(e.response?.data['error'] ?? 'Failed to send code');
+
+      final errorMsg = (e.response?.data is Map)
+          ? e.response?.data['error']?.toString()
+          : e.message; // Let Dio interceptor messages pass cleanly
+
+      throw Exception(errorMsg ?? 'Failed to send code');
     }
   }
 
@@ -46,19 +51,19 @@ class AuthRepository {
       }
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        return (
-          null,
-          response.data['error']?.toString() ?? 'Verification failed',
-        );
+        final errorMsg = (response.data is Map)
+            ? response.data['error']?.toString()
+            : null;
+        return (null, errorMsg ?? 'Verification failed');
       }
 
       return (response.data['token'] as String?, null);
     } catch (e) {
       if (e is DioException) {
-        return (
-          null,
-          e.response?.data['error']?.toString() ?? 'Verification failed',
-        );
+        final errorMsg = (e.response?.data is Map)
+            ? e.response?.data['error']?.toString()
+            : e.message;
+        return (null, errorMsg ?? 'Verification failed');
       }
       return (null, e.toString());
     }
@@ -86,9 +91,10 @@ class AuthRepository {
     try {
       await _dio.patch('/profile', data: {'name': name});
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error']?.toString() ?? 'Failed to update profile',
-      );
+      final errorMsg = (e.response?.data is Map)
+          ? e.response?.data['error']?.toString()
+          : e.message;
+      throw Exception(errorMsg ?? 'Failed to update profile');
     }
   }
 }

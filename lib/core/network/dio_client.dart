@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentinel/core/network/api_constants.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/router/app_router.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
@@ -10,7 +10,7 @@ import 'package:sentinel/core/time/time_sync_provider.dart';
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://52.54.196.131',
+      baseUrl: ApiConstants.baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -35,6 +35,21 @@ final dioProvider = Provider<Dio>((ref) {
         return handler.next(options);
       },
       onError: (DioException e, handler) async {
+        // Intercept HandshakeErrors (CERTIFICATE_VERIFY_FAILED) which indicate the
+        // device clock is severely desynced or they are on a captive portal.
+        if ((e.type == DioExceptionType.unknown ||
+                e.type == DioExceptionType.connectionError ||
+                e.type == DioExceptionType.badCertificate) &&
+            e.error != null &&
+            e.error.toString().contains('CERTIFICATE_VERIFY_FAILED')) {
+          return handler.reject(
+            e.copyWith(
+              message:
+                  "Your device's date and time are incorrect. Please update them in Settings to connect to Sentinel.",
+            ),
+          );
+        }
+
         // Global 401 Redirect Logic
         // Broad check to ensure we never redirect on auth-related 401s
         final uri = e.requestOptions.uri.toString().toLowerCase();
@@ -58,6 +73,8 @@ final dioProvider = Provider<Dio>((ref) {
             GoRouter.of(context).go('/login');
           }
         }
+
+        return handler.next(e);
       },
     ),
   );
@@ -79,20 +96,6 @@ final dioProvider = Provider<Dio>((ref) {
       },
     ),
   );
-
-  // Self-signed certificate handling
-  // CRITCAL: We must trust the specific certificate for 52.54.196.131
-  // For now, we allow the bad certificate callback if the host matches.
-  // In a real production environment with a self-signed cert, we should embed the DER/PEM
-  // and check against it. Since we don't have the file yet, we conditionally allow it for this IP.
-  (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-    final client = HttpClient();
-    client.badCertificateCallback =
-        (X509Certificate cert, String host, int port) {
-          return host == '52.54.196.131';
-        };
-    return client;
-  };
 
   return dio;
 });

@@ -56,9 +56,13 @@ class MainActivity: FlutterActivity() {
             when (call.method) {
                 "startTracking" -> {
                     val jwt = call.argument<String>("jwt")
+                    val baseUrl = call.argument<String>("baseUrl")
                     if (jwt != null) {
                         val serviceIntent = Intent(this, LocationTrackingService::class.java).apply {
                             putExtra("jwt", jwt)
+                            if (baseUrl != null) {
+                                putExtra("baseUrl", baseUrl)
+                            }
                         }
                         androidx.core.content.ContextCompat.startForegroundService(this, serviceIntent)
                         result.success(null)
