@@ -2,10 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
+import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/features/events/presentation/active_event_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
+
+enum _LocationBannerState { none, backgroundLimited, denied, disabledByUser }
 
 class ActiveEventScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -19,12 +23,14 @@ class ActiveEventScreen extends ConsumerStatefulWidget {
 class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
   Timer? _timer;
   Duration _remaining = Duration.zero;
+  _LocationBannerState _locationBanner = _LocationBannerState.none;
   bool _isExpired = false;
 
   @override
   void initState() {
     super.initState();
     _startTimer();
+    _checkLocationStatus();
   }
 
   @override
@@ -273,15 +279,18 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                 ),
               ),
 
+              // Location status banner
+              if (_locationBanner != _LocationBannerState.none)
+                _buildLocationBanner(),
+
               Container(
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(16),
-                color: AppTheme.darkSurface, // #1E1E1E
+                color: AppTheme.darkSurface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Message
                     Text(
                       event.message?.isNotEmpty == true
                           ? event.message!
@@ -295,10 +304,8 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 16),
-                    // Attachments & Location Row
                     Row(
                       children: [
-                        // Attachments
                         const Icon(
                           Icons.attach_file,
                           color: AppTheme.primaryColor,
@@ -314,17 +321,24 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                           ),
                         ),
                         const SizedBox(width: 24),
-                        // Location (Brief)
-                        const Icon(
+                        Icon(
                           Icons.location_on,
-                          color: Colors.grey,
+                          color: _locationBanner == _LocationBannerState.none
+                              ? Colors.greenAccent
+                              : Colors.grey,
                           size: 16,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Locating...', // Simple placeholder
+                        Text(
+                          _locationBanner == _LocationBannerState.none
+                              ? 'Tracking'
+                              : (_locationBanner == _LocationBannerState.denied
+                                    ? 'Location off'
+                                    : 'Limited'),
                           style: TextStyle(
-                            color: Colors.white70,
+                            color: _locationBanner == _LocationBannerState.none
+                                ? Colors.white70
+                                : Colors.grey,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
@@ -435,6 +449,102 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _checkLocationStatus() async {
+    // Check user preference first
+    final prefs = ref.read(preferencesServiceProvider);
+    if (!prefs.locationTrackingEnabled) {
+      if (mounted) {
+        setState(() => _locationBanner = _LocationBannerState.disabledByUser);
+      }
+      return;
+    }
+
+    final fineStatus = await Permission.locationWhenInUse.status;
+    if (!fineStatus.isGranted) {
+      if (mounted) {
+        setState(() => _locationBanner = _LocationBannerState.denied);
+      }
+      return;
+    }
+
+    final bgStatus = await Permission.locationAlways.status;
+    if (!bgStatus.isGranted) {
+      if (mounted) {
+        setState(
+          () => _locationBanner = _LocationBannerState.backgroundLimited,
+        );
+      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() => _locationBanner = _LocationBannerState.none);
+    }
+  }
+
+  Widget _buildLocationBanner() {
+    String text;
+    String? actionText;
+    VoidCallback? onAction;
+
+    switch (_locationBanner) {
+      case _LocationBannerState.disabledByUser:
+        text = 'Location tracking is off. Enable it in Settings.';
+        actionText = null;
+        onAction = null;
+      case _LocationBannerState.denied:
+        text = 'Location is off. Your contacts will not receive your location.';
+        actionText = null;
+        onAction = null;
+      case _LocationBannerState.backgroundLimited:
+        text =
+            'Background location is limited. Your contacts may not receive your latest location.';
+        actionText = 'Open settings';
+        onAction = () => openAppSettings();
+      case _LocationBannerState.none:
+        return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.all(12),
+      color: AppTheme.darkSurface,
+      child: Row(
+        children: [
+          const Icon(Icons.location_off, color: Colors.grey, size: 18),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 13,
+              ),
+            ),
+          ),
+          if (actionText != null && onAction != null)
+            TextButton(
+              onPressed: onAction,
+              style: TextButton.styleFrom(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+              ),
+              child: Text(
+                actionText,
+                style: const TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

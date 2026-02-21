@@ -7,7 +7,7 @@ part of 'create_event_provider.dart';
 // **************************************************************************
 
 String _$createEventNotifierHash() =>
-    r'd69c02c1d834082a7f6b3fa08b00760df7364b41';
+    r'a26129ecc7174cc237887607782941617edd964e';
 
 /// See also [CreateEventNotifier].
 @ProviderFor(CreateEventNotifier)

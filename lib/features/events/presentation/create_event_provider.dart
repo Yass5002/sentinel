@@ -5,6 +5,7 @@ import 'package:sentinel/features/files/domain/file_model.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/data/event_repository.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
+import 'package:sentinel/core/services/location_tracking_provider.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'create_event_provider.g.dart';
@@ -65,13 +66,26 @@ class CreateEventNotifier extends _$CreateEventNotifier {
   }
 
   void addContact(String email, String name) {
+    if (state.selectedContacts.length >= 10) {
+      state = state.copyWith(error: 'Maximum of 10 contacts allowed');
+      return;
+    }
     if (state.selectedContacts.any((c) => c['email'] == email)) return;
     state = state.copyWith(
       selectedContacts: [
         ...state.selectedContacts,
         {'email': email, 'name': name},
       ],
+      error: null,
     );
+  }
+
+  void updateContacts(List<Map<String, String>> contacts) {
+    if (contacts.length > 10) {
+      state = state.copyWith(error: 'Maximum of 10 contacts allowed');
+      return;
+    }
+    state = state.copyWith(selectedContacts: contacts, error: null);
   }
 
   void removeContact(String email) {
@@ -79,6 +93,7 @@ class CreateEventNotifier extends _$CreateEventNotifier {
       selectedContacts: state.selectedContacts
           .where((c) => c['email'] != email)
           .toList(),
+      error: null,
     );
   }
 
@@ -164,6 +179,8 @@ class CreateEventNotifier extends _$CreateEventNotifier {
       state = state.copyWith(isSubmitting: false);
       // Refresh Home Screen
       ref.invalidate(eventListProvider);
+      // Start location tracking immediately — before user can kill the app
+      ref.read(locationTrackingManagerProvider).startTrackingIfAllowed();
       return event;
     } catch (e) {
       state = state.copyWith(isSubmitting: false, error: e.toString());

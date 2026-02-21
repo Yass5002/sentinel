@@ -1,5 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
+import 'package:sentinel/core/services/native_location_service.dart';
+import 'package:sentinel/core/services/notification_service.dart';
+import 'package:sentinel/core/services/native_timer_service.dart';
 import 'package:sentinel/features/auth/data/auth_repository.dart';
 import 'package:sentinel/features/auth/domain/user_model.dart';
 
@@ -55,6 +58,20 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> logout() async {
+    // Cancel all notifications and native timers
+    try {
+      await ref.read(notificationServiceProvider).cancelAll();
+      await ref.read(nativeTimerServiceProvider).cancelAll();
+    } catch (_) {
+      // Ignore — best effort
+    }
+    // Stop location tracking and clear native JWT before clearing auth
+    try {
+      await ref.read(nativeLocationServiceProvider).stopTracking();
+      await ref.read(nativeLocationServiceProvider).clearNativeJwt();
+    } catch (_) {
+      // Ignore — best effort
+    }
     await ref.read(secureStorageProvider).deleteToken();
     state = const AsyncValue.data(null);
   }

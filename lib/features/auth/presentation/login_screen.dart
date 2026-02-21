@@ -109,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                       decoration: const InputDecoration(
                         // Removed labelText to prevent floating label
-                        hintText: 'user@example.com',
+                        hintText: 'Email',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {

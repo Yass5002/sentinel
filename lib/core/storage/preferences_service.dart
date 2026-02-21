@@ -26,6 +26,8 @@ class PreferencesService {
   static const _keyNotificationPermissionDismissedPermanently =
       'notification_permission_dismissed_permanently';
   static const _keyDeferralCount = 'notification_deferral_count';
+  static const _keyNotificationOnboardingShown =
+      'notification_onboarding_shown';
 
   ThemeMode getThemeMode() {
     final modeString = _prefs.getString(_keyThemeMode);
@@ -68,5 +70,34 @@ class PreferencesService {
   Future<void> incrementDeferralCount() async {
     final current = deferralCount;
     await _prefs.setInt(_keyDeferralCount, current + 1);
+  }
+
+  // True after the notification onboarding primer has been shown once.
+  // Never reset — this is a one-shot gate.
+  bool get hasShownNotificationOnboarding =>
+      _prefs.getBool(_keyNotificationOnboardingShown) ?? false;
+  Future<void> setNotificationOnboardingShown() async {
+    await _prefs.setBool(_keyNotificationOnboardingShown, true);
+  }
+
+  // --- Location ---
+
+  static const _keyLocationOnboardingShown = 'location_onboarding_shown';
+  static const _keyLocationTrackingEnabled = 'location_tracking_enabled';
+
+  /// True after the location onboarding primer has been shown once.
+  /// Never reset — this is a one-shot gate.
+  bool get hasShownLocationOnboarding =>
+      _prefs.getBool(_keyLocationOnboardingShown) ?? false;
+  Future<void> setLocationOnboardingShown() async {
+    await _prefs.setBool(_keyLocationOnboardingShown, true);
+  }
+
+  /// Whether the user wants location tracking enabled.
+  /// Default: true (but only functional if permission is granted).
+  bool get locationTrackingEnabled =>
+      _prefs.getBool(_keyLocationTrackingEnabled) ?? true;
+  Future<void> setLocationTrackingEnabled(bool enabled) async {
+    await _prefs.setBool(_keyLocationTrackingEnabled, enabled);
   }
 }

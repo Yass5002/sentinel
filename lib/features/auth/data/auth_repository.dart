@@ -81,4 +81,14 @@ class AuthRepository {
       return null;
     }
   }
+
+  Future<void> updateProfile({required String name}) async {
+    try {
+      await _dio.patch('/profile', data: {'name': name});
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error']?.toString() ?? 'Failed to update profile',
+      );
+    }
+  }
 }

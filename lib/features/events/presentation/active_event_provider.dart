@@ -5,6 +5,7 @@ import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/core/services/notification_service.dart';
 import 'package:sentinel/core/services/native_timer_service.dart';
+import 'package:sentinel/core/services/location_tracking_provider.dart';
 
 class ActiveEventState {
   final AsyncValue<Event> event;
@@ -38,6 +39,8 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
   ActiveEventNotifier(this._repository, this._eventId, this._ref)
     : super(const ActiveEventState(event: AsyncValue.loading())) {
     _fetchEvent();
+    // Ensure tracking is active when user enters event detail
+    _ref.read(locationTrackingManagerProvider).syncTrackingState();
   }
 
   Future<void> _fetchEvent() async {
@@ -67,6 +70,8 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
 
       // Refresh home list
       _ref.invalidate(eventListProvider);
+      // Sync tracking — active events decreased, may need to stop
+      _ref.read(locationTrackingManagerProvider).syncTrackingState();
       return true;
     } catch (e, st) {
       state = state.copyWith(
@@ -90,6 +95,8 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
 
       // Refresh home list
       _ref.invalidate(eventListProvider);
+      // Sync tracking — active events decreased, may need to stop
+      _ref.read(locationTrackingManagerProvider).syncTrackingState();
       return true;
     } catch (e, st) {
       state = state.copyWith(

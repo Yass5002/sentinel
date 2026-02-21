@@ -183,7 +183,7 @@ class NotificationService {
 
   Future<void> cancelReminders(String eventId) async {
     if (!_initialized) await init();
-    final baseId = eventId.hashCode.abs() % 1000000;
+    final baseId = eventId.hashCode.abs() % 100000000;
     await _flutterLocalNotificationsPlugin.cancel(id: baseId + 0);
     await _flutterLocalNotificationsPlugin.cancel(id: baseId + 1);
     await _flutterLocalNotificationsPlugin.cancel(id: baseId + 2);

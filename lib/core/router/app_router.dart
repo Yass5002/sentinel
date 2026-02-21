@@ -5,10 +5,12 @@ import 'package:sentinel/core/storage/secure_storage_service.dart';
 import 'package:sentinel/features/auth/presentation/login_screen.dart';
 import 'package:sentinel/features/auth/presentation/otp_screen.dart';
 import 'package:sentinel/features/auth/presentation/splash_screen.dart';
+import 'package:sentinel/features/contacts/presentation/contacts_screen.dart';
 import 'package:sentinel/features/events/presentation/create_event_screen.dart';
 import 'package:sentinel/features/events/presentation/active_event_screen.dart';
 import 'package:sentinel/features/events/presentation/event_detail_screen.dart';
 import 'package:sentinel/features/home/presentation/home_screen.dart';
+import 'package:sentinel/features/profile/presentation/profile_screen.dart';
 import 'package:sentinel/features/settings/presentation/settings_screen.dart';
 
 // Global Navigator Key
@@ -76,6 +78,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/contacts',
+        builder: (context, state) => const ContactsScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

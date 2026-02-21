@@ -12,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.sentinel.app/timer"
+    private val LOCATION_CHANNEL = "com.sentinel.app/location"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -43,6 +44,41 @@ class MainActivity: FlutterActivity() {
                     // not just the currently-running service.
                     cancelAllAlarms()
                     result.success(true)
+                }
+                else -> {
+                    result.notImplemented()
+                }
+            }
+        }
+
+        // Location tracking MethodChannel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LOCATION_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "startTracking" -> {
+                    val jwt = call.argument<String>("jwt")
+                    if (jwt != null) {
+                        val serviceIntent = Intent(this, LocationTrackingService::class.java).apply {
+                            putExtra("jwt", jwt)
+                        }
+                        androidx.core.content.ContextCompat.startForegroundService(this, serviceIntent)
+                        result.success(null)
+                    } else {
+                        result.error("INVALID_ARGS", "Missing jwt", null)
+                    }
+                }
+                "stopTracking" -> {
+                    val serviceIntent = Intent(this, LocationTrackingService::class.java)
+                    stopService(serviceIntent)
+                    result.success(null)
+                }
+                "isTracking" -> {
+                    result.success(LocationTrackingService.isRunning)
+                }
+                "clearJwt" -> {
+                    // Clear native JWT from SharedPreferences (used on logout)
+                    val prefs = getSharedPreferences("sentinel_location_prefs", Context.MODE_PRIVATE)
+                    prefs.edit().remove("location_jwt").apply()
+                    result.success(null)
                 }
                 else -> {
                     result.notImplemented()

@@ -60,48 +60,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   Future<void> _handlePostCreation(Event event) async {
     final prefs = ref.read(preferencesServiceProvider);
+    final status = await Permission.notification.status;
 
-    if (!prefs.notificationPermissionDenied &&
-        !prefs.notificationPermissionDismissedPermanently) {
-      final status = await Permission.notification.status;
-      if (status.isDenied) {
-        if (!mounted) return;
-        final granted = await _showPrimerDialog();
-        if (granted) {
-          final newStatus = await Permission.notification.request();
-          if (newStatus.isPermanentlyDenied) {
-            await prefs.setNotificationPermissionDismissedPermanently(true);
-            await prefs.setNotificationsEnabled(false);
-          } else if (newStatus.isDenied) {
-            await prefs.setNotificationPermissionDenied(true);
-            await prefs.setNotificationsEnabled(false);
-          } else if (newStatus.isGranted || newStatus.isProvisional) {
-            await prefs.setNotificationsEnabled(true);
-          }
-        } else {
-          await prefs.incrementDeferralCount();
-          if (prefs.deferralCount >= 3) {
-            await prefs.setNotificationPermissionDeferred(true);
-          }
-        }
-      }
-    }
-
-    final postStatus = await Permission.notification.status;
-    if ((postStatus.isGranted || postStatus.isProvisional) &&
+    // Permissions are handled once during onboarding on the Home screen.
+    // Here we only schedule if permission is already in place.
+    if ((status.isGranted || status.isProvisional) &&
         prefs.notificationsEnabled) {
-      // F10: Request SCHEDULE_EXACT_ALARM independently of the primer flow.
-      // This runs every time notifications are enabled, catching the case where
-      // OS notification permission was already granted on a previous event.
-      if (Platform.isAndroid) {
-        final exactStatus = await Permission.scheduleExactAlarm.status;
-        if (!exactStatus.isGranted) {
-          await Permission.scheduleExactAlarm.request();
-          // Note: On API 33+, this opens a Settings screen. The user may deny it.
-          // The notification_service gracefully falls back to inexact scheduling.
-        }
-      }
-
       final timeSync = ref.read(timeSyncProvider);
       await ref
           .read(notificationServiceProvider)
@@ -124,61 +88,6 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             timeDelta: timeSync,
           );
     }
-  }
-
-  Future<bool> _showPrimerDialog() async {
-    bool granted = false;
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.darkSurface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero, // Sharp dialog box
-        ),
-        title: const Text(
-          'Never Miss a Check-in',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          'Sentinel needs notification permissions to remind you before your Sentinels expire. '
-          'Without this, you won\'t receive the crucial 1hr, 15m, and 5m countdown alerts.',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              granted = false;
-              Navigator.of(ctx).pop();
-            },
-            style: TextButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero, // Sharp button
-              ),
-            ),
-            child: const Text('Not Now', style: TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              granted = true;
-              Navigator.of(ctx).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero, // Sharp button
-              ),
-            ),
-            child: const Text(
-              'Enable Notifications',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-    return granted;
   }
 
   @override
@@ -311,8 +220,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   const SizedBox(height: 8),
                   ContactPicker(
                     selectedContacts: state.selectedContacts,
-                    onAdd: notifier.addContact,
                     onRemove: notifier.removeContact,
+                    onUpdateContacts: notifier.updateContacts,
                   ),
 
                   const SizedBox(height: 24),
