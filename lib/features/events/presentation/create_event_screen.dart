@@ -95,20 +95,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final state = ref.watch(createEventNotifierProvider);
     final notifier = ref.read(createEventNotifierProvider.notifier);
 
-    // Listen for errors
-    ref.listen(createEventNotifierProvider, (prev, next) {
-      if (next.error != null && next.error != prev?.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              next.error!,
-              style: const TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    });
+    // Inline error instead of SnackBar
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -271,7 +258,45 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       onDelete: () => notifier.removeFile(file.id),
                     ),
                   ),
-                  const SizedBox(height: 48), // Spacing before button
+                  const SizedBox(height: 24), // Spacing before button
+                  // Inline Error Display
+                  if (state.error != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.errorColor.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: AppTheme.errorColor.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            color: AppTheme.errorColor,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              state.error!,
+                              style: const TextStyle(
+                                color: AppTheme.errorColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ] else ...[
+                    const SizedBox(height: 48), // Spacing if no error
+                  ],
                   // Unpinned Button
                   SizedBox(
                     height: 56,

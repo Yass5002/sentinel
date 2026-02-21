@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/services/native_location_service.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
+import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/features/events/data/event_repository.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 
@@ -95,7 +96,7 @@ class LocationTrackingManager {
       // eventListProvider's cached AsyncValue, which may not be loaded yet.
       final repository = _ref.read(eventRepositoryProvider);
       final events = await repository.getEvents(filter: 'all');
-      final now = DateTime.now();
+      final now = _ref.read(timeSyncProvider.notifier).now;
       return events.where((e) => _isActive(e, now)).length;
     } catch (e) {
       dev.log('_getActiveEventCount failed: $e', name: 'Location');

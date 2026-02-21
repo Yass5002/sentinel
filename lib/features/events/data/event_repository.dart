@@ -83,6 +83,9 @@ class EventRepository {
       await _dio.post('/events/$eventId/checkin');
     } catch (e) {
       if (e is DioException) {
+        if (e.response?.statusCode == 404) {
+          throw Exception('Event already terminated');
+        }
         throw Exception(e.response?.data['error'] ?? 'Failed to check in');
       }
       throw Exception('Failed to check in: $e');
@@ -94,6 +97,9 @@ class EventRepository {
       await _dio.delete('/events/$eventId');
     } catch (e) {
       if (e is DioException) {
+        if (e.response?.statusCode == 404) {
+          throw Exception('Event already terminated');
+        }
         throw Exception(e.response?.data['error'] ?? 'Failed to cancel event');
       }
       throw Exception('Failed to cancel event: $e');

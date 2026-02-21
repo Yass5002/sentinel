@@ -27,15 +27,19 @@ class EventDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildErrorState(BuildContext context, Object error) {
+    final errStr = error.toString();
+    final isNotFound =
+        errStr.contains('404') || errStr.toLowerCase().contains('not found');
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 64),
           const SizedBox(height: 16),
-          const Text(
-            'EVENT NOT FOUND',
-            style: TextStyle(
+          Text(
+            isNotFound ? 'UNAVAILABLE' : 'EVENT NOT FOUND',
+            style: const TextStyle(
               color: AppTheme.errorColor,
               fontFamily: 'Courier',
               fontWeight: FontWeight.bold,
@@ -44,10 +48,15 @@ class EventDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            error.toString(),
-            style: const TextStyle(color: Colors.white54),
-            textAlign: TextAlign.center,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              isNotFound
+                  ? 'This event is no longer available or has been purged.'
+                  : errStr,
+              style: const TextStyle(color: Colors.white54),
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 32),
           TextButton(
@@ -217,7 +226,9 @@ class EventDetailScreen extends ConsumerWidget {
                                   Text(
                                     _formatBytes(file.fileSize),
                                     style: TextStyle(
-                                      color: Colors.white.withValues(alpha: 0.5),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.5,
+                                      ),
                                       fontSize: 12,
                                       fontFamily: 'Courier',
                                     ),

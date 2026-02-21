@@ -172,8 +172,21 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
     // Initial time update on first build with data
     if (state.event.hasValue && _remaining == Duration.zero && !_isExpired) {
-      Future.microtask(() => _updateTime());
+      if (!state.event.value!.fired && !state.event.value!.terminated) {
+        Future.microtask(() => _updateTime());
+      }
     }
+
+    // Auto-redirect if the backend marks it as terminated or fired while we're watching
+    ref.listen(activeEventProvider(widget.eventId), (prev, next) {
+      final ev = next.event.valueOrNull;
+      if (ev != null && (ev.fired || ev.terminated)) {
+        if (mounted &&
+            GoRouterState.of(context).matchedLocation.contains('/active/')) {
+          context.go('/');
+        }
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.black,

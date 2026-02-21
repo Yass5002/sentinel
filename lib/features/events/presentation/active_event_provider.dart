@@ -74,6 +74,18 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
       _ref.read(locationTrackingManagerProvider).syncTrackingState();
       return true;
     } catch (e, st) {
+      if (e.toString().contains('Event already terminated')) {
+        // Event ended server-side. Clean up local state, refresh, return true.
+        await _ref.read(notificationServiceProvider).cancelReminders(_eventId);
+        await _ref.read(nativeTimerServiceProvider).cancelCountdown(_eventId);
+        _ref.invalidate(eventListProvider);
+        _ref.read(locationTrackingManagerProvider).syncTrackingState();
+
+        state = state.copyWith(isCheckingIn: false);
+        await refresh();
+        return true;
+      }
+
       state = state.copyWith(
         isCheckingIn: false,
         event: AsyncValue.error(e, st),
@@ -99,6 +111,17 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
       _ref.read(locationTrackingManagerProvider).syncTrackingState();
       return true;
     } catch (e, st) {
+      if (e.toString().contains('Event already terminated')) {
+        await _ref.read(notificationServiceProvider).cancelReminders(_eventId);
+        await _ref.read(nativeTimerServiceProvider).cancelCountdown(_eventId);
+        _ref.invalidate(eventListProvider);
+        _ref.read(locationTrackingManagerProvider).syncTrackingState();
+
+        state = state.copyWith(isCancelling: false);
+        await refresh();
+        return true;
+      }
+
       state = state.copyWith(
         isCancelling: false,
         event: AsyncValue.error(e, st),
