@@ -14,6 +14,7 @@ import android.content.pm.ServiceInfo
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.sentinel.R
+import java.util.Collections
 
 class SentinelTimerService : Service() {
 
@@ -25,27 +26,78 @@ class SentinelTimerService : Service() {
     // Default countdown duration — used as fallback if expiryEpochMs is missing
     private val countdownDurationMs = 5 * 60 * 1000L
 
+    data class TimerEvent(val eventId: String, val eventName: String, val expiryEpochMs: Long)
+
+    private val eventQueue = mutableListOf<TimerEvent>()
+
+    companion object {
+        const val ACTION_START = "ACTION_START"
+        const val ACTION_CANCEL = "ACTION_CANCEL"
+        var isRunning = false
+            private set
+    }
+
     override fun onCreate() {
         super.onCreate()
+        isRunning = true
         createNotificationChannel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // F7: Always accept new intents — cancel old handler and replace the countdown.
-        // This prevents silently swallowing a second Sentinel's countdown.
-        handler.removeCallbacksAndMessages(null)
-        releaseWakeLock()
+        val action = intent?.action ?: ACTION_START
+        val eventId = intent?.getStringExtra("eventId") ?: ""
 
+        if (action == ACTION_CANCEL) {
+            if (eventId.isNotEmpty()) {
+                // Remove the specific event from the queue
+                eventQueue.removeAll { it.eventId == eventId }
+                if (eventQueue.isEmpty()) {
+                    stopSelf()
+                } else {
+                    displayTopEvent()
+                }
+            }
+            return START_NOT_STICKY
+        }
+
+        // Action is ACTION_START
         val expiryEpochMs = intent?.getLongExtra("expiryEpochMs", 0L) ?: 0L
         val eventName = intent?.getStringExtra("eventName") ?: "Unknown"
 
-        // If the old pending intent fires and lacks the extra (yielding 0L),
-        // fall back to currentTimeMillis() + 5 minutes to prevent the 1970 bug.
-        val targetEpochMs = if (expiryEpochMs > 0L) {
-            expiryEpochMs
-        } else {
-            System.currentTimeMillis() + countdownDurationMs
+        if (eventId.isNotEmpty()) {
+            val targetEpochMs = if (expiryEpochMs > 0L) {
+                expiryEpochMs
+            } else {
+                System.currentTimeMillis() + countdownDurationMs
+            }
+
+            // Remove any existing entry for this eventId, then add the new one
+            eventQueue.removeAll { it.eventId == eventId }
+            eventQueue.add(TimerEvent(eventId, eventName, targetEpochMs))
+            
+            // Sort by soonest expiry (ascending)
+            eventQueue.sortBy { it.expiryEpochMs }
         }
+
+        displayTopEvent()
+
+        // F4: Release the WakeLock transferred from TimerAlarmReceiver now that
+        // startForeground() has been called and the service is guaranteed to run.
+        TimerAlarmReceiver.releaseReceiverWakeLock()
+
+        return START_NOT_STICKY
+    }
+
+    private fun displayTopEvent() {
+        if (eventQueue.isEmpty()) {
+            stopSelf()
+            return
+        }
+
+        val topEvent = eventQueue.first()
+
+        handler.removeCallbacksAndMessages(null)
+        releaseWakeLock()
 
         val tapIntent = Intent(this, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -58,19 +110,17 @@ class SentinelTimerService : Service() {
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(eventName)
+            .setContentTitle(topEvent.eventName)
             .setContentText("Emergency alerts will trigger when the timer reaches zero. Tap to check in.")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_stat_sentinel)
             .setOngoing(true)
             .setUsesChronometer(true)
             .setChronometerCountDown(true)
-            .setWhen(targetEpochMs)
+            .setWhen(topEvent.expiryEpochMs)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
 
-        // F3: Use specialUse instead of shortService to avoid the 3-minute hard kill limit.
-        // shortService is limited to ~3 minutes on Android 14+, but our countdown is 5 minutes.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (Build.VERSION.SDK_INT >= 34) {
                 startForeground(
@@ -89,23 +139,16 @@ class SentinelTimerService : Service() {
             startForeground(NOTIFICATION_ID, notification)
         }
 
-        // F4: Release the WakeLock transferred from TimerAlarmReceiver now that
-        // startForeground() has been called and the service is guaranteed to run.
-        TimerAlarmReceiver.releaseReceiverWakeLock()
-
-        // F6: Acquire a WakeLock for the countdown duration to prevent Doze mode
-        // from suspending handler.postDelayed (which uses uptimeMillis internally).
-        val timeRemainingMs = Math.max(0L, targetEpochMs - System.currentTimeMillis())
+        val timeRemainingMs = Math.max(0L, topEvent.expiryEpochMs - System.currentTimeMillis())
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "sentinel:countdown_wakelock")
         wakeLock?.acquire(timeRemainingMs + 2000L) // +2s safety margin
 
-        // Stop itself precisely when the countdown reaches zero
+        // When the countdown reaches zero, remove it from the queue and display the next one
         handler.postDelayed({
-            stopSelf()
+            eventQueue.remove(topEvent)
+            displayTopEvent()
         }, timeRemainingMs)
-
-        return START_NOT_STICKY
     }
 
     // F3: Safety net for Android 14+ — if the system determines we've exceeded
@@ -122,6 +165,7 @@ class SentinelTimerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        isRunning = false
         handler.removeCallbacksAndMessages(null)
         releaseWakeLock()
     }

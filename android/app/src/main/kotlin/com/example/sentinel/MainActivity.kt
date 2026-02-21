@@ -151,8 +151,13 @@ class MainActivity: FlutterActivity() {
         // F1: Remove from persisted store
         AlarmStore.remove(context, eventId)
         
-        val serviceIntent = Intent(context, SentinelTimerService::class.java)
-        context.stopService(serviceIntent)
+        if (SentinelTimerService.isRunning) {
+            val serviceIntent = Intent(context, SentinelTimerService::class.java).apply {
+                action = SentinelTimerService.ACTION_CANCEL
+                putExtra("eventId", eventId)
+            }
+            context.startService(serviceIntent)
+        }
     }
 
     /**

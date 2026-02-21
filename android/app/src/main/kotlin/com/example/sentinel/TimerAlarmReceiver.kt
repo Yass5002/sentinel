@@ -51,8 +51,10 @@ class TimerAlarmReceiver : BroadcastReceiver() {
         }
 
         val serviceIntent = Intent(context, SentinelTimerService::class.java).apply {
+            action = SentinelTimerService.ACTION_START
             putExtra("expiryEpochMs", expiryEpochMs)
             putExtra("eventName", eventName)
+            putExtra("eventId", eventId)
         }
 
         // Starting foreground service from exact alarm broadcast is allowed on API 31+.

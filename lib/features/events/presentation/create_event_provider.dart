@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/features/files/data/file_repository.dart';
 import 'package:sentinel/features/files/domain/file_model.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
@@ -113,17 +112,7 @@ class CreateEventNotifier extends _$CreateEventNotifier {
         isUploading: false,
       );
     } catch (e) {
-      if (e.toString().contains('File too large')) {
-        state = state.copyWith(
-          isUploading: false,
-          error: 'File exceeds 10MB limit',
-        );
-      } else {
-        state = state.copyWith(
-          isUploading: false,
-          error: 'Upload failed: ${e.toString().replaceAll('Exception: ', '')}',
-        );
-      }
+      state = state.copyWith(isUploading: false, error: e.toString());
     }
   }
 
@@ -152,8 +141,7 @@ class CreateEventNotifier extends _$CreateEventNotifier {
       return d.inMilliseconds;
     } else {
       if (state.targetDate == null) return 0;
-      final now = ref.read(timeSyncProvider.notifier).now;
-      final diff = state.targetDate!.difference(now);
+      final diff = state.targetDate!.difference(DateTime.now());
       return diff.inMilliseconds;
     }
   }

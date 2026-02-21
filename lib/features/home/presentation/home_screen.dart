@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
-import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/core/services/location_tracking_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/home/presentation/widgets/app_drawer.dart';
@@ -21,8 +19,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with WidgetsBindingObserver {
-  Timer? _refreshTimer;
-
   @override
   void initState() {
     super.initState();
@@ -30,39 +26,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _runOnboardingSequence();
     });
-    _startRefreshTimer();
-  }
-
-  void _startRefreshTimer() {
-    _refreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
-      final eventsAsync = ref.read(eventListProvider);
-      final events = eventsAsync.valueOrNull;
-      if (events == null || events.isEmpty) return;
-
-      final now = ref.read(timeSyncProvider.notifier).now;
-      bool needsRefresh = false;
-
-      for (final event in events) {
-        if (!event.terminated && !event.checkedIn && !event.fired) {
-          if (event.expiresAt.isBefore(now) ||
-              event.expiresAt.isAtSameMomentAs(now)) {
-            needsRefresh = true;
-            break;
-          }
-        }
-      }
-
-      if (needsRefresh) {
-        ref.invalidate(eventListProvider);
-        ref.read(locationTrackingManagerProvider).syncTrackingState();
-      }
-    });
   }
 
   @override
   void dispose() {
-    _refreshTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

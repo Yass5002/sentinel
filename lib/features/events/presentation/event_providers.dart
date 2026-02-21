@@ -1,5 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/features/events/data/event_repository.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 
@@ -20,7 +19,7 @@ class EventList extends _$EventList {
     // Sort: Active events first (soonest expiry), then Terminated (recent first)
     // Active = !terminated && !checkedIn && !fired && expiresAt > now
     // Actually, backend might handle some logic, but let's sort client side per spec.
-    final now = ref.read(timeSyncProvider.notifier).now;
+    final now = DateTime.now();
 
     events.sort((a, b) {
       final aIsActive =
