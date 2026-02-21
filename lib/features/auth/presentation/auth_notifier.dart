@@ -65,10 +65,9 @@ class AuthNotifier extends _$AuthNotifier {
     } catch (_) {
       // Ignore — best effort
     }
-    // Stop location tracking and clear native JWT before clearing auth
+    // Stop location tracking before clearing auth
     try {
       await ref.read(nativeLocationServiceProvider).stopTracking();
-      await ref.read(nativeLocationServiceProvider).clearNativeJwt();
     } catch (_) {
       // Ignore — best effort
     }

@@ -74,9 +74,9 @@ class LocationTrackingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Extract JWT and baseUrl from intent or fall back to SharedPreferences (START_STICKY restart)
-        jwt = intent?.getStringExtra("jwt") ?: getStoredJwt()
-        baseUrl = intent?.getStringExtra("baseUrl") ?: getStoredBaseUrl()
+        // Extract JWT and baseUrl from intent (START_REDELIVER_INTENT will provide original intent on restart)
+        jwt = intent?.getStringExtra("jwt")
+        baseUrl = intent?.getStringExtra("baseUrl")
 
         if (jwt.isNullOrEmpty() || baseUrl.isNullOrEmpty()) {
             Log.w(TAG, "No JWT or Base URL available — stopping service")
@@ -84,21 +84,17 @@ class LocationTrackingService : Service() {
             return START_NOT_STICKY
         }
 
-        // Persist JWT and baseUrl for START_STICKY restart scenario
-        storeJwt(jwt!!)
-        storeBaseUrl(baseUrl!!)
-
         // If already running, this is idempotent — just update JWT
         if (isRunning) {
             Log.d(TAG, "Service already running — JWT updated")
-            return START_STICKY
+            return START_REDELIVER_INTENT
         }
 
         isRunning = true
         startForegroundNotification()
         startLocationUpdates()
 
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun startForegroundNotification() {
@@ -193,7 +189,6 @@ class LocationTrackingService : Service() {
                         }
                         401 -> {
                             Log.w(TAG, "JWT expired (401) — stopping service")
-                            clearStoredJwt()
                             stopSelf()
                         }
                         else -> {
@@ -252,7 +247,6 @@ class LocationTrackingService : Service() {
                     if (response.code == 200) {
                         Log.d(TAG, "Buffered location flushed: lat=${loc.lat}, lng=${loc.lng}")
                     } else if (response.code == 401) {
-                        clearStoredJwt()
                         stopSelf()
                         return
                     }
@@ -347,32 +341,7 @@ class LocationTrackingService : Service() {
         }
     }
 
-    // --- JWT Persistence (for START_STICKY restart) ---
 
-    private fun getPrefs(): SharedPreferences {
-        return getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    }
-
-    private fun storeJwt(token: String) {
-        getPrefs().edit().putString(KEY_JWT, token).apply()
-    }
-
-    private fun getStoredJwt(): String? {
-        return getPrefs().getString(KEY_JWT, null)
-    }
-
-    private fun storeBaseUrl(url: String) {
-        getPrefs().edit().putString(KEY_BASE_URL, url).apply()
-    }
-
-    private fun getStoredBaseUrl(): String? {
-        return getPrefs().getString(KEY_BASE_URL, null)
-    }
-
-    fun clearStoredJwt() {
-        getPrefs().edit().remove(KEY_JWT).apply()
-        getPrefs().edit().remove(KEY_BASE_URL).apply()
-    }
 
     // --- OkHttp Client default ---
 

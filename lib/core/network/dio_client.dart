@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/router/app_router.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
+import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
+import 'package:flutter/material.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
@@ -66,10 +68,18 @@ final dioProvider = Provider<Dio>((ref) {
             path.contains('profile');
 
         if (e.response?.statusCode == 401 && !isAuthRelated) {
-          await secureStorage.deleteToken();
+          // Trigger the central logout teardown (clears tokens, stops services/timers/notifications)
+          ref.read(authNotifierProvider.notifier).logout();
 
           final context = rootNavigatorKey.currentContext;
           if (context != null && context.mounted) {
+            // Unfocus any active text inputs
+            FocusScope.of(context).unfocus();
+
+            // Pop any open dialogs, bottom sheets, or intermediate routes
+            rootNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+
+            // Redirect context to login
             GoRouter.of(context).go('/login');
           }
         }

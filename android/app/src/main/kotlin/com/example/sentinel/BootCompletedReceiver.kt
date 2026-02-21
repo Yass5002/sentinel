@@ -80,19 +80,6 @@ class BootCompletedReceiver : BroadcastReceiver() {
             }
         }
 
-        // --- Restart location tracking if it was active before reboot ---
-        val locationPrefs = context.getSharedPreferences("sentinel_location_prefs", Context.MODE_PRIVATE)
-        val storedJwt = locationPrefs.getString("location_jwt", null)
-        if (!storedJwt.isNullOrEmpty()) {
-            Log.d("Sentinel", "Boot: JWT found — restarting location tracking service")
-            val serviceIntent = Intent(context, LocationTrackingService::class.java).apply {
-                putExtra("jwt", storedJwt)
-            }
-            try {
-                androidx.core.content.ContextCompat.startForegroundService(context, serviceIntent)
-            } catch (e: Exception) {
-                Log.e("Sentinel", "Failed to restart location service after boot: ${e.message}")
-            }
-        }
+
     }
 }

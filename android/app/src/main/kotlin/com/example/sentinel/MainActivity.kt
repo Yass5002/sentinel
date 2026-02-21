@@ -78,12 +78,7 @@ class MainActivity: FlutterActivity() {
                 "isTracking" -> {
                     result.success(LocationTrackingService.isRunning)
                 }
-                "clearJwt" -> {
-                    // Clear native JWT from SharedPreferences (used on logout)
-                    val prefs = getSharedPreferences("sentinel_location_prefs", Context.MODE_PRIVATE)
-                    prefs.edit().remove("location_jwt").apply()
-                    result.success(null)
-                }
+
                 else -> {
                     result.notImplemented()
                 }

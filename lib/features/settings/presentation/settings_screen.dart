@@ -147,7 +147,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     // Stop location tracking
     try {
       await ref.read(nativeLocationServiceProvider).stopTracking();
-      await ref.read(nativeLocationServiceProvider).clearNativeJwt();
     } catch (_) {}
 
     // Clear JWT

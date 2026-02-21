@@ -55,14 +55,4 @@ class NativeLocationService {
       return false;
     }
   }
-
-  /// Clears the JWT stored in native SharedPreferences.
-  /// Call on logout to prevent START_STICKY from resuming with a stale token.
-  Future<void> clearNativeJwt() async {
-    try {
-      await _channel.invokeMethod('clearJwt');
-    } on PlatformException catch (e) {
-      dev.log('clearNativeJwt failed: ${e.message}', name: 'Location');
-    }
-  }
 }
