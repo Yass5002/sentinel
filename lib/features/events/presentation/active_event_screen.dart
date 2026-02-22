@@ -75,15 +75,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
     // 1. Invalidate Home List so it upgrades to "Fired" or "History"
     ref.invalidate(eventListProvider);
 
-    // 2. Wait a moment for backend to process "fire"
-    await Future.delayed(const Duration(seconds: 2));
-
-    // 3. Refresh this event and transition to read-only detail view
+    // 2. Immediately transition to read-only detail view
     if (mounted) {
-      await ref.read(activeEventProvider(widget.eventId).notifier).refresh();
-      if (mounted) {
-        context.replace('/event/${widget.eventId}');
-      }
+      context.replace('/history/${widget.eventId}');
     }
   }
 
@@ -178,8 +172,8 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
       final ev = next.event.valueOrNull;
       if (ev != null && ev.fired) {
         if (mounted &&
-            GoRouterState.of(context).matchedLocation.contains('/active/')) {
-          context.replace('/event/${widget.eventId}');
+            GoRouterState.of(context).matchedLocation.contains('/event/')) {
+          context.replace('/history/${widget.eventId}');
         }
       }
     });
