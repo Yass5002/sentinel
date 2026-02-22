@@ -75,6 +75,16 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AsyncValue.data(null);
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      await ref.read(authRepositoryProvider).deleteAccount();
+      // On success, trigger full app teardown by logging out
+      await logout();
+    } catch (e) {
+      throw Exception('Failed to delete account: $e');
+    }
+  }
+
   String _generateNameFromEmail(String email) {
     try {
       final localPart = email.split('@').first;

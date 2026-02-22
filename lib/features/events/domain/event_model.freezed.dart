@@ -722,3 +722,279 @@ abstract class _EventContact implements EventContact {
   _$$EventContactImplCopyWith<_$EventContactImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+PaginatedEventResponse _$PaginatedEventResponseFromJson(
+  Map<String, dynamic> json,
+) {
+  return _PaginatedEventResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$PaginatedEventResponse {
+  List<Event> get events => throw _privateConstructorUsedError;
+  @JsonKey(name: 'total_count')
+  int get totalCount => throw _privateConstructorUsedError;
+  int get page => throw _privateConstructorUsedError;
+  int get limit => throw _privateConstructorUsedError;
+  @JsonKey(name: 'has_more')
+  bool get hasMore => throw _privateConstructorUsedError;
+
+  /// Serializes this PaginatedEventResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of PaginatedEventResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $PaginatedEventResponseCopyWith<PaginatedEventResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PaginatedEventResponseCopyWith<$Res> {
+  factory $PaginatedEventResponseCopyWith(
+    PaginatedEventResponse value,
+    $Res Function(PaginatedEventResponse) then,
+  ) = _$PaginatedEventResponseCopyWithImpl<$Res, PaginatedEventResponse>;
+  @useResult
+  $Res call({
+    List<Event> events,
+    @JsonKey(name: 'total_count') int totalCount,
+    int page,
+    int limit,
+    @JsonKey(name: 'has_more') bool hasMore,
+  });
+}
+
+/// @nodoc
+class _$PaginatedEventResponseCopyWithImpl<
+  $Res,
+  $Val extends PaginatedEventResponse
+>
+    implements $PaginatedEventResponseCopyWith<$Res> {
+  _$PaginatedEventResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of PaginatedEventResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? events = null,
+    Object? totalCount = null,
+    Object? page = null,
+    Object? limit = null,
+    Object? hasMore = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            events: null == events
+                ? _value.events
+                : events // ignore: cast_nullable_to_non_nullable
+                      as List<Event>,
+            totalCount: null == totalCount
+                ? _value.totalCount
+                : totalCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            page: null == page
+                ? _value.page
+                : page // ignore: cast_nullable_to_non_nullable
+                      as int,
+            limit: null == limit
+                ? _value.limit
+                : limit // ignore: cast_nullable_to_non_nullable
+                      as int,
+            hasMore: null == hasMore
+                ? _value.hasMore
+                : hasMore // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$PaginatedEventResponseImplCopyWith<$Res>
+    implements $PaginatedEventResponseCopyWith<$Res> {
+  factory _$$PaginatedEventResponseImplCopyWith(
+    _$PaginatedEventResponseImpl value,
+    $Res Function(_$PaginatedEventResponseImpl) then,
+  ) = __$$PaginatedEventResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<Event> events,
+    @JsonKey(name: 'total_count') int totalCount,
+    int page,
+    int limit,
+    @JsonKey(name: 'has_more') bool hasMore,
+  });
+}
+
+/// @nodoc
+class __$$PaginatedEventResponseImplCopyWithImpl<$Res>
+    extends
+        _$PaginatedEventResponseCopyWithImpl<$Res, _$PaginatedEventResponseImpl>
+    implements _$$PaginatedEventResponseImplCopyWith<$Res> {
+  __$$PaginatedEventResponseImplCopyWithImpl(
+    _$PaginatedEventResponseImpl _value,
+    $Res Function(_$PaginatedEventResponseImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of PaginatedEventResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? events = null,
+    Object? totalCount = null,
+    Object? page = null,
+    Object? limit = null,
+    Object? hasMore = null,
+  }) {
+    return _then(
+      _$PaginatedEventResponseImpl(
+        events: null == events
+            ? _value._events
+            : events // ignore: cast_nullable_to_non_nullable
+                  as List<Event>,
+        totalCount: null == totalCount
+            ? _value.totalCount
+            : totalCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        page: null == page
+            ? _value.page
+            : page // ignore: cast_nullable_to_non_nullable
+                  as int,
+        limit: null == limit
+            ? _value.limit
+            : limit // ignore: cast_nullable_to_non_nullable
+                  as int,
+        hasMore: null == hasMore
+            ? _value.hasMore
+            : hasMore // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$PaginatedEventResponseImpl implements _PaginatedEventResponse {
+  const _$PaginatedEventResponseImpl({
+    final List<Event> events = const [],
+    @JsonKey(name: 'total_count') this.totalCount = 0,
+    this.page = 1,
+    this.limit = 20,
+    @JsonKey(name: 'has_more') this.hasMore = false,
+  }) : _events = events;
+
+  factory _$PaginatedEventResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PaginatedEventResponseImplFromJson(json);
+
+  final List<Event> _events;
+  @override
+  @JsonKey()
+  List<Event> get events {
+    if (_events is EqualUnmodifiableListView) return _events;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_events);
+  }
+
+  @override
+  @JsonKey(name: 'total_count')
+  final int totalCount;
+  @override
+  @JsonKey()
+  final int page;
+  @override
+  @JsonKey()
+  final int limit;
+  @override
+  @JsonKey(name: 'has_more')
+  final bool hasMore;
+
+  @override
+  String toString() {
+    return 'PaginatedEventResponse(events: $events, totalCount: $totalCount, page: $page, limit: $limit, hasMore: $hasMore)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PaginatedEventResponseImpl &&
+            const DeepCollectionEquality().equals(other._events, _events) &&
+            (identical(other.totalCount, totalCount) ||
+                other.totalCount == totalCount) &&
+            (identical(other.page, page) || other.page == page) &&
+            (identical(other.limit, limit) || other.limit == limit) &&
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_events),
+    totalCount,
+    page,
+    limit,
+    hasMore,
+  );
+
+  /// Create a copy of PaginatedEventResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PaginatedEventResponseImplCopyWith<_$PaginatedEventResponseImpl>
+  get copyWith =>
+      __$$PaginatedEventResponseImplCopyWithImpl<_$PaginatedEventResponseImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$PaginatedEventResponseImplToJson(this);
+  }
+}
+
+abstract class _PaginatedEventResponse implements PaginatedEventResponse {
+  const factory _PaginatedEventResponse({
+    final List<Event> events,
+    @JsonKey(name: 'total_count') final int totalCount,
+    final int page,
+    final int limit,
+    @JsonKey(name: 'has_more') final bool hasMore,
+  }) = _$PaginatedEventResponseImpl;
+
+  factory _PaginatedEventResponse.fromJson(Map<String, dynamic> json) =
+      _$PaginatedEventResponseImpl.fromJson;
+
+  @override
+  List<Event> get events;
+  @override
+  @JsonKey(name: 'total_count')
+  int get totalCount;
+  @override
+  int get page;
+  @override
+  int get limit;
+  @override
+  @JsonKey(name: 'has_more')
+  bool get hasMore;
+
+  /// Create a copy of PaginatedEventResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$PaginatedEventResponseImplCopyWith<_$PaginatedEventResponseImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}

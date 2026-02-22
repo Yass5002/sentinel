@@ -64,3 +64,27 @@ Map<String, dynamic> _$$EventContactImplToJson(_$EventContactImpl instance) =>
       'name': instance.name,
       'created_at': instance.createdAt.toIso8601String(),
     };
+
+_$PaginatedEventResponseImpl _$$PaginatedEventResponseImplFromJson(
+  Map<String, dynamic> json,
+) => _$PaginatedEventResponseImpl(
+  events:
+      (json['events'] as List<dynamic>?)
+          ?.map((e) => Event.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  totalCount: (json['total_count'] as num?)?.toInt() ?? 0,
+  page: (json['page'] as num?)?.toInt() ?? 1,
+  limit: (json['limit'] as num?)?.toInt() ?? 20,
+  hasMore: json['has_more'] as bool? ?? false,
+);
+
+Map<String, dynamic> _$$PaginatedEventResponseImplToJson(
+  _$PaginatedEventResponseImpl instance,
+) => <String, dynamic>{
+  'events': instance.events,
+  'total_count': instance.totalCount,
+  'page': instance.page,
+  'limit': instance.limit,
+  'has_more': instance.hasMore,
+};

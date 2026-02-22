@@ -13,6 +13,28 @@ class AuthRepository {
 
   AuthRepository(this._dio);
 
+  Future<void> updateFCMToken(String token) async {
+    try {
+      await _dio.post('/user/device-token', data: {'deviceToken': token});
+    } catch (e) {
+      // Don't throw, this is a non-critical background operation
+      print('Failed to update FCM token: $e');
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await _dio.delete('/account');
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(
+          e.response?.data['error'] ?? 'Failed to delete account',
+        );
+      }
+      throw Exception('Failed to delete account: $e');
+    }
+  }
+
   Future<void> sendOtp(String email) async {
     try {
       await _dio.post('/auth/otp/send', data: {'email': email});

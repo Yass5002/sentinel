@@ -94,9 +94,9 @@ class LocationTrackingManager {
       // Fetch events directly from the repository to avoid relying on
       // eventListProvider's cached AsyncValue, which may not be loaded yet.
       final repository = _ref.read(eventRepositoryProvider);
-      final events = await repository.getEvents(filter: 'all');
+      final response = await repository.getEvents(filter: 'all');
       final now = DateTime.now();
-      return events.where((e) => _isActive(e, now)).length;
+      return response.events.where((e) => _isActive(e, now)).length;
     } catch (e) {
       dev.log('_getActiveEventCount failed: $e', name: 'Location');
       return 0;

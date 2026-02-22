@@ -187,10 +187,9 @@ class ContactsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         title: const Text(
-          'Delete this contact?',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          'Delete contact',
+          style: TextStyle(color: Colors.white),
         ),
         content: Text(
           contact.name.isNotEmpty
@@ -201,27 +200,19 @@ class ContactsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            style: TextButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-            ),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
           ),
-          ElevatedButton(
+          TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               ref
                   .read(contactsNotifierProvider.notifier)
                   .deleteContact(contact.id);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.errorColor,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: AppTheme.errorColor),
             ),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -292,6 +283,10 @@ class _ContactTile extends StatelessWidget {
                 ),
               )
             : null,
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_sharp, color: Colors.white54),
+          onPressed: onDelete,
+        ),
       ),
     );
   }

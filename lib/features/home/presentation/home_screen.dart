@@ -341,8 +341,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         color: AppTheme.primaryColor,
         backgroundColor: AppTheme.darkSurface,
         onRefresh: () async {
-          ref.invalidate(eventListProvider);
-          await ref.read(eventListProvider.future);
+          await ref.read(eventListProvider.notifier).refresh();
         },
         child: eventListAsync.when(
           data: (events) {
@@ -371,10 +370,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
               );
             }
+            final eventListNotifier = ref.read(eventListProvider.notifier);
+            final hasMore = eventListNotifier.hasMore;
+            final isLoadingMore = eventListNotifier.isLoadingMore;
+
             return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
-              itemCount: events.length,
+              itemCount: events.length + (hasMore ? 1 : 0),
               itemBuilder: (context, index) {
+                if (index == events.length) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: Center(
+                      child: isLoadingMore
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.primaryColor,
+                              ),
+                            )
+                          : TextButton(
+                              onPressed: () {
+                                ref
+                                    .read(eventListProvider.notifier)
+                                    .fetchNextPage();
+                                // Trigger a rebuild to show the loading spinner immediately
+                                setState(() {});
+                              },
+                              style: TextButton.styleFrom(
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero,
+                                ),
+                              ),
+                              child: const Text(
+                                'LOAD MORE',
+                                style: TextStyle(
+                                  color: AppTheme.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                            ),
+                    ),
+                  );
+                }
+
                 final event = events[index];
                 return EventCard(
                   event: event,

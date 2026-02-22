@@ -25,25 +25,23 @@ class EventRepository {
     }
   }
 
-  Future<List<Event>> getEvents({String filter = 'all'}) async {
+  Future<PaginatedEventResponse> getEvents({
+    String filter = 'all',
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
       final response = await _dio.get(
         '/events',
-        queryParameters: {'filter': filter},
+        queryParameters: {'filter': filter, 'page': page, 'limit': limit},
       );
 
-      final eventsData = response.data['events'];
-      if (eventsData == null) {
-        return [];
-      }
-
-      final List<dynamic> eventsJson = eventsData;
-      return eventsJson.map((json) => Event.fromJson(json)).toList();
+      return PaginatedEventResponse.fromJson(response.data);
     } catch (e) {
       if (e is DioException) {
-        // If 404 (Not Found), it likely means no events exist yet. Return empty list.
+        // If 404 (Not Found), it likely means no events exist yet. Return empty response.
         if (e.response?.statusCode == 404) {
-          return [];
+          return const PaginatedEventResponse(events: [], hasMore: false);
         }
         throw Exception(e.response?.data['error'] ?? 'Failed to fetch events');
       }
@@ -97,6 +95,19 @@ class EventRepository {
         throw Exception(e.response?.data['error'] ?? 'Failed to cancel event');
       }
       throw Exception('Failed to cancel event: $e');
+    }
+  }
+
+  Future<void> deleteEventHistory(String eventId) async {
+    try {
+      await _dio.delete('/events/$eventId/history');
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(
+          e.response?.data['error'] ?? 'Failed to delete event history',
+        );
+      }
+      throw Exception('Failed to delete event history: $e');
     }
   }
 }

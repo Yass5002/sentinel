@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/services/notification_service.dart';
@@ -11,6 +10,7 @@ import 'package:sentinel/core/services/location_tracking_provider.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -23,14 +23,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     with WidgetsBindingObserver {
   bool _osNotificationPermissionGranted = false;
   bool _osLocationPermissionGranted = false;
-  String _appVersion = '';
+  bool _isDeletingAccount = false;
+  String? _deleteAccountError;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkOsPermissions();
-    _loadAppVersion();
   }
 
   @override
@@ -43,15 +43,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _checkOsPermissions();
-    }
-  }
-
-  Future<void> _loadAppVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    if (mounted) {
-      setState(() {
-        _appVersion = 'v${info.version} (${info.buildNumber})';
-      });
     }
   }
 
@@ -104,33 +95,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        title: const Text(
+        title: const Text('Log out', style: TextStyle(color: Colors.white)),
+        content: const Text(
           'Are you sure you want to log out?',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            style: TextButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-            ),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
           ),
-          ElevatedButton(
+          TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               _performLogout();
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.errorColor,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
+            child: const Text(
+              'Log out',
+              style: TextStyle(color: AppTheme.errorColor),
             ),
-            child: const Text('Log out', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -154,6 +137,60 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
     if (mounted) {
       context.go('/login');
+    }
+  }
+
+  Future<void> _handleDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.darkSurface,
+        title: const Text(
+          'Delete Account',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: AppTheme.errorColor),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      setState(() {
+        _isDeletingAccount = true;
+        _deleteAccountError = null;
+      });
+
+      try {
+        await ref.read(authNotifierProvider.notifier).deleteAccount();
+        // Successful teardown handles routing automatically via auth state listener
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _deleteAccountError = 'Failed to delete account. Please try again.';
+          });
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isDeletingAccount = false;
+          });
+        }
+      }
     }
   }
 
@@ -315,16 +352,73 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
           const SizedBox(height: 32),
 
+          // --- DANGER ZONE ---
+          _buildSectionHeader('DANGER ZONE'),
+          const SizedBox(height: 16),
+          if (_deleteAccountError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                _deleteAccountError!,
+                style: const TextStyle(
+                  color: AppTheme.errorColor,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          SizedBox(
+            height: 48,
+            child: OutlinedButton(
+              onPressed: _isDeletingAccount ? null : _handleDeleteAccount,
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: AppTheme.errorColor),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+              ),
+              child: _isDeletingAccount
+                  ? const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppTheme.errorColor,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Deleting...',
+                          style: TextStyle(
+                            color: AppTheme.errorColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    )
+                  : const Text(
+                      'Delete Account',
+                      style: TextStyle(
+                        color: AppTheme.errorColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 48),
+
           // --- ABOUT ---
           _buildSectionHeader('ABOUT'),
           const SizedBox(height: 16),
-          _buildAboutRow(
-            'App version',
-            _appVersion.isEmpty ? '...' : _appVersion,
-          ),
-          const SizedBox(height: 8),
           _buildAboutLink('Privacy policy', 'https://sentinel.app/privacy'),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           _buildAboutLink('Terms of service', 'https://sentinel.app/terms'),
           const SizedBox(height: 48),
         ],
@@ -339,28 +433,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         color: Color(0xFF666666),
         fontWeight: FontWeight.bold,
         fontSize: 12,
-      ),
-    );
-  }
-
-  Widget _buildAboutRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.4),
-              fontSize: 14,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
+import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -83,7 +84,7 @@ class _EventCardState extends ConsumerState<EventCard> {
   @override
   Widget build(BuildContext context) {
     // Sharp corners, Dark Grey background
-    return Container(
+    Widget card = Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
         // Muted background for inactive events (almost black), distinct from active (dark grey)
@@ -179,6 +180,64 @@ class _EventCardState extends ConsumerState<EventCard> {
           ),
         ),
       ),
+    );
+
+    if (_isActive) return card;
+
+    return Dismissible(
+      key: Key(widget.event.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        color: AppTheme.errorColor,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: const Icon(Icons.delete_sharp, color: Colors.white),
+      ),
+      confirmDismiss: (_) async {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.darkSurface,
+            title: const Text(
+              'Delete Event',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: const Text(
+              'Are you sure you want to permanently delete this event from your history?',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: AppTheme.errorColor),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (confirmed != true) return false;
+
+        try {
+          await ref
+              .read(eventListProvider.notifier)
+              .deleteHistory(widget.event.id);
+          return true;
+        } catch (e) {
+          return false; // Slides back if it fails
+        }
+      },
+      child: card,
     );
   }
 }

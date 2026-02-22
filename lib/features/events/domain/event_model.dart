@@ -39,3 +39,17 @@ class EventContact with _$EventContact {
   factory EventContact.fromJson(Map<String, dynamic> json) =>
       _$EventContactFromJson(json);
 }
+
+@freezed
+class PaginatedEventResponse with _$PaginatedEventResponse {
+  const factory PaginatedEventResponse({
+    @Default([]) List<Event> events,
+    @JsonKey(name: 'total_count') @Default(0) int totalCount,
+    @Default(1) int page,
+    @Default(20) int limit,
+    @JsonKey(name: 'has_more') @Default(false) bool hasMore,
+  }) = _PaginatedEventResponse;
+
+  factory PaginatedEventResponse.fromJson(Map<String, dynamic> json) =>
+      _$PaginatedEventResponseFromJson(json);
+}
