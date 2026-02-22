@@ -78,9 +78,12 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
     // 2. Wait a moment for backend to process "fire"
     await Future.delayed(const Duration(seconds: 2));
 
-    // 3. Refresh this event to show "FIRED" / "ALERTS SENT"
+    // 3. Refresh this event and transition to read-only detail view
     if (mounted) {
-      ref.read(activeEventProvider(widget.eventId).notifier).refresh();
+      await ref.read(activeEventProvider(widget.eventId).notifier).refresh();
+      if (mounted) {
+        context.replace('/event/${widget.eventId}');
+      }
     }
   }
 
@@ -169,6 +172,17 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(activeEventProvider(widget.eventId));
+
+    // Redirect to readonly detail page if it expires in the background while we are here
+    ref.listen(activeEventProvider(widget.eventId), (prev, next) {
+      final ev = next.event.valueOrNull;
+      if (ev != null && ev.fired) {
+        if (mounted &&
+            GoRouterState.of(context).matchedLocation.contains('/active/')) {
+          context.replace('/event/${widget.eventId}');
+        }
+      }
+    });
 
     // Initial time update on first build with data
     if (state.event.hasValue && _remaining == Duration.zero && !_isExpired) {
