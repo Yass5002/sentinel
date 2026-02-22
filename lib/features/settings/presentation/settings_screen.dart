@@ -417,9 +417,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           // --- ABOUT ---
           _buildSectionHeader('ABOUT'),
           const SizedBox(height: 16),
-          _buildAboutLink('Privacy policy', 'https://sentinel.app/privacy'),
+          _buildAboutLink(
+            'Privacy policy',
+            'https://sentinel.yssn.tech/privacy',
+          ),
           const SizedBox(height: 16),
-          _buildAboutLink('Terms of service', 'https://sentinel.app/terms'),
+          _buildAboutLink(
+            'Terms of service',
+            'https://sentinel.yssn.tech/terms',
+          ),
           const SizedBox(height: 48),
         ],
       ),
