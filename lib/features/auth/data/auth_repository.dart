@@ -24,7 +24,7 @@ class AuthRepository {
 
   Future<void> deleteAccount() async {
     try {
-      await _dio.delete('/account');
+      await _dio.delete('/account', data: {'confirm': true});
     } catch (e) {
       if (e is DioException) {
         throw Exception(

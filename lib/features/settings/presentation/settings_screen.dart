@@ -177,7 +177,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
       try {
         await ref.read(authNotifierProvider.notifier).deleteAccount();
-        // Successful teardown handles routing automatically via auth state listener
+        if (mounted) {
+          context.go('/login');
+        }
       } catch (e) {
         if (mounted) {
           setState(() {
