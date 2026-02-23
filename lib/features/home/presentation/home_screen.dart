@@ -331,9 +331,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         backgroundColor: Colors.black,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_sharp),
-            onPressed: () {},
+          TextButton(
+            onPressed: () => context.push('/help'),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+            child: const Text(
+              'HELP',
+              style: TextStyle(
+                color: AppTheme.primaryColor,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
           ),
         ],
       ),

@@ -10,6 +10,7 @@ import 'package:sentinel/features/events/presentation/create_event_screen.dart';
 import 'package:sentinel/features/events/presentation/active_event_screen.dart';
 import 'package:sentinel/features/events/presentation/event_detail_screen.dart';
 import 'package:sentinel/features/home/presentation/home_screen.dart';
+import 'package:sentinel/features/help/presentation/help_screen.dart';
 import 'package:sentinel/features/profile/presentation/profile_screen.dart';
 import 'package:sentinel/features/settings/presentation/settings_screen.dart';
 
@@ -79,6 +80,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
       ),
+      GoRoute(path: '/help', builder: (context, state) => const HelpScreen()),
       GoRoute(
         path: '/contacts',
         builder: (context, state) => const ContactsScreen(),
