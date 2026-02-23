@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/contacts/domain/contact_model.dart';
 import 'package:sentinel/features/contacts/presentation/contacts_provider.dart';
 
@@ -60,18 +61,9 @@ class ContactsScreen extends ConsumerWidget {
             );
           },
           loading: () => _buildShimmerLoading(),
-          error: (err, _) => ListView(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                color: AppTheme.errorColor.withValues(alpha: 0.1),
-                child: const Text(
-                  'Failed to load contacts',
-                  style: TextStyle(color: AppTheme.errorColor),
-                ),
-              ),
-            ],
+          error: (err, _) => CustomErrorWidget(
+            message: 'Failed to load contacts',
+            onRetry: () => ref.invalidate(contactsNotifierProvider),
           ),
         ),
       ),

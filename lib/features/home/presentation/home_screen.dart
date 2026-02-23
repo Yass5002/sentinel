@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/services/location_tracking_provider.dart';
+import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/home/presentation/widgets/app_drawer.dart';
 import 'package:sentinel/features/home/presentation/widgets/event_card.dart';
@@ -440,11 +441,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               return Container(height: 100, color: AppTheme.darkSurface);
             },
           ),
-          error: (err, stack) => Center(
-            child: Text(
-              'Failed to load events',
-              style: TextStyle(color: Colors.red.withValues(alpha: 0.7)),
-            ),
+          error: (err, stack) => CustomErrorWidget(
+            message: 'Failed to load events',
+            onRetry: () => ref.read(eventListProvider.notifier).refresh(),
           ),
         ),
       ),

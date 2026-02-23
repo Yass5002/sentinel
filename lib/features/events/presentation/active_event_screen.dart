@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
+import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/events/presentation/active_event_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 
@@ -436,26 +437,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppTheme.primaryColor),
         ),
-        error: (err, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Failed to load event',
-                style: TextStyle(color: AppTheme.errorColor),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref
-                    .read(activeEventProvider(widget.eventId).notifier)
-                    .refresh(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white24,
-                ),
-                child: const Text('RETRY'),
-              ),
-            ],
-          ),
+        error: (err, stack) => CustomErrorWidget(
+          message: 'Failed to load event details',
+          onRetry: () => ref.invalidate(activeEventProvider),
         ),
       ),
     );

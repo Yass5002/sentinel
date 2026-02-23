@@ -4,6 +4,7 @@ import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/presentation/event_detail_provider.dart';
+import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:intl/intl.dart';
 
 import 'package:open_file/open_file.dart';
@@ -87,35 +88,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   }
 
   Widget _buildErrorState(BuildContext context, Object error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 64),
-          const SizedBox(height: 16),
-          const Text(
-            'EVENT NOT FOUND',
-            style: TextStyle(
-              color: AppTheme.errorColor,
-              fontFamily: 'Courier',
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-              letterSpacing: 2.0,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            error.toString(),
-            style: const TextStyle(color: Colors.white54),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('BACK', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+    return CustomErrorWidget(
+      message: error.toString(),
+      onRetry: () => ref.invalidate(eventDetailProvider(widget.eventId)),
     );
   }
 

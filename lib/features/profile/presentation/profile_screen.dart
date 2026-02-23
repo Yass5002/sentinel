@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/profile/presentation/profile_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -120,18 +121,9 @@ class ProfileScreen extends ConsumerWidget {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppTheme.primaryColor),
         ),
-        error: (err, _) => ListView(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              color: AppTheme.errorColor.withValues(alpha: 0.1),
-              child: const Text(
-                'Failed to load profile',
-                style: TextStyle(color: AppTheme.errorColor),
-              ),
-            ),
-          ],
+        error: (err, _) => CustomErrorWidget(
+          message: 'Failed to load profile',
+          onRetry: () => ref.invalidate(profileNotifierProvider),
         ),
       ),
     );
