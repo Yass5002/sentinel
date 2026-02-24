@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/features/auth/data/auth_repository.dart';
 import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String email;
@@ -135,9 +136,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
       await ref.read(authRepositoryProvider).sendOtp(widget.email);
       _startResendTimer();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Code sent")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.codeSent)),
+        );
       }
     } catch (e) {
       setState(() {
@@ -151,7 +152,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_sharp
+                : Icons.arrow_back_sharp,
+            color: Colors.white,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -164,9 +170,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Check your email',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.checkEmail,
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -174,7 +180,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'We sent a 6-digit code to ${widget.email}',
+                    AppLocalizations.of(context)!.codeSentTo(widget.email),
                     style: const TextStyle(
                       color: AppTheme.lightGreyText,
                       fontSize: 16,
@@ -283,7 +289,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('VERIFY'),
+                          : Text(AppLocalizations.of(context)!.verify),
                     ),
                   ),
 
@@ -296,8 +302,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                           onPressed: _resendCountdown > 0 ? null : _resendCode,
                           child: Text(
                             _resendCountdown > 0
-                                ? 'Resend code in ${_resendCountdown}s'
-                                : 'Resend code',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.resendCodeIn(_resendCountdown)
+                                : AppLocalizations.of(context)!.resendCode,
                             style: TextStyle(
                               color: _resendCountdown > 0
                                   ? AppTheme.lightGreyText

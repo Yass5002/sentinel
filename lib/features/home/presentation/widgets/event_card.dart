@@ -6,6 +6,9 @@ import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:sentinel/core/theme/font_utils.dart';
+import 'package:sentinel/core/util/localization_helper.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class EventCard extends ConsumerStatefulWidget {
   final Event event;
@@ -124,7 +127,7 @@ class _EventCardState extends ConsumerState<EventCard> {
                           Text(
                             _formatDuration(_remaining),
                             style: TextStyle(
-                              fontFamily: 'Courier', // Monospace
+                              fontFamily: FontUtils.getCourierFont(context),
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: _remaining.inMinutes < 10
@@ -136,12 +139,16 @@ class _EventCardState extends ConsumerState<EventCard> {
                         else
                           Text(
                             widget.event.checkedIn
-                                ? 'CHECKED IN'
+                                ? AppLocalizations.of(context)!.checkedIn
                                 : (widget.event.fired
-                                      ? 'ALERT SENT'
+                                      ? AppLocalizations.of(context)!.alertsSent
                                       : (widget.event.terminated
-                                            ? 'CANCELED'
-                                            : 'ALERT SENT')),
+                                            ? AppLocalizations.of(
+                                                context,
+                                              )!.cancelled
+                                            : AppLocalizations.of(
+                                                context,
+                                              )!.alertsSent)),
                             style: TextStyle(
                               color: _getStatusColor(),
                               fontWeight: FontWeight.bold,
@@ -152,7 +159,7 @@ class _EventCardState extends ConsumerState<EventCard> {
                         const SizedBox(height: 8),
                         // Metadata
                         Text(
-                          'Created ${timeago.format(widget.event.createdAt)}',
+                          '${AppLocalizations.of(context)!.created} ${timeago.format(widget.event.createdAt, locale: Localizations.localeOf(context).languageCode)}',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.3),
                             fontSize: 12,
@@ -166,10 +173,10 @@ class _EventCardState extends ConsumerState<EventCard> {
                 if (_isActive)
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: Icon(
-                        Icons
-                            .arrow_forward_ios_sharp, // Use sharp arrow if available or standard
+                      padding: const EdgeInsetsDirectional.only(end: 16.0),
+                      child: L10nHelper.flippedIcon(
+                        context,
+                        Icons.arrow_forward_ios_sharp,
                         size: 16,
                         color: Colors.white.withValues(alpha: 0.2),
                       ),
@@ -190,7 +197,7 @@ class _EventCardState extends ConsumerState<EventCard> {
       background: Container(
         margin: const EdgeInsets.only(bottom: 12),
         color: AppTheme.errorColor,
-        alignment: Alignment.centerRight,
+        alignment: AlignmentDirectional.centerEnd,
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: const Icon(Icons.delete_sharp, color: Colors.white),
       ),
@@ -199,27 +206,27 @@ class _EventCardState extends ConsumerState<EventCard> {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: AppTheme.darkSurface,
-            title: const Text(
-              'Delete Event',
-              style: TextStyle(color: Colors.white),
+            title: Text(
+              AppLocalizations.of(context)!.deleteEvent,
+              style: const TextStyle(color: Colors.white),
             ),
-            content: const Text(
-              'Are you sure you want to permanently delete this event from your history?',
-              style: TextStyle(color: Colors.white70),
+            content: Text(
+              AppLocalizations.of(context)!.deleteEventHistoryConfirm,
+              style: const TextStyle(color: Colors.white70),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(color: AppTheme.errorColor),
+                child: Text(
+                  AppLocalizations.of(context)!.delete,
+                  style: const TextStyle(color: AppTheme.errorColor),
                 ),
               ),
             ],

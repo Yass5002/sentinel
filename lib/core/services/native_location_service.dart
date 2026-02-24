@@ -19,7 +19,11 @@ class NativeLocationService {
 
   /// Reads JWT from secure storage and starts the native location service.
   /// Idempotent — safe to call if already tracking.
-  Future<void> startTracking() async {
+  Future<void> startTracking({
+    String? notifTitle,
+    String? notifBody,
+    String? notifDesc,
+  }) async {
     final jwt = await _ref.read(secureStorageProvider).getToken();
     if (jwt == null || jwt.isEmpty) {
       dev.log('startTracking: No JWT available — skipping', name: 'Location');
@@ -30,6 +34,9 @@ class NativeLocationService {
       await _channel.invokeMethod('startTracking', {
         'jwt': jwt,
         'baseUrl': ApiConstants.baseUrl,
+        'notifTitle': notifTitle,
+        'notifBody': notifBody,
+        'notifDesc': notifDesc,
       });
     } on PlatformException catch (e) {
       dev.log('startTracking failed: ${e.message}', name: 'Location');

@@ -15,6 +15,7 @@ import 'package:sentinel/core/services/native_timer_service.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({super.key});
@@ -66,6 +67,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     // Here we only schedule if permission is already in place.
     if ((status.isGranted || status.isProvisional) &&
         prefs.notificationsEnabled) {
+      final l10n = AppLocalizations.of(context)!;
       final timeSync = ref.read(timeSyncProvider);
       await ref
           .read(notificationServiceProvider)
@@ -74,6 +76,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             eventName: event.name,
             expiresAt: event.expiresAt,
             timeDelta: timeSync,
+            title: l10n.notifTitle,
+            alertTitle: l10n.notifAlertTitle,
+            hourBody: l10n.notifHourBody(event.name),
+            fifteenMinBody: l10n.notifFifteenMinBody(event.name),
+            fiveMinBody: l10n.notifFiveMinBody(event.name),
+            firedBody: l10n.notifFiredBody(event.name),
           );
 
       // Start native countdown precisely 5 minutes before event expires
@@ -86,6 +94,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             triggerAt: triggerAt,
             expiresAt: event.expiresAt,
             timeDelta: timeSync,
+            notificationChannelName: l10n.notifCountdownChannelName,
+            notificationChannelDesc: l10n.notifCountdownChannelDesc,
+            notificationTitle: event.name,
+            notificationBody: l10n.notifCountdownBody,
           );
     }
   }
@@ -113,13 +125,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'NEW SENTINEL',
-          style: TextStyle(letterSpacing: 2.0, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.newSentinel,
+          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_sharp),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_sharp
+                : Icons.arrow_back_sharp,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -140,9 +156,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'EVENT NAME',
-                      hintStyle: TextStyle(
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.eventName,
+                      hintStyle: const TextStyle(
                         color: Color(0xFF666666),
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -157,9 +173,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   const SizedBox(height: 24),
 
                   // Timer Section
-                  const Text(
-                    'TIMER',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.timer,
+                    style: const TextStyle(
                       color: Color(0xFF666666),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -177,9 +193,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   const SizedBox(height: 24),
 
                   // Message Block
-                  const Text(
-                    'MESSAGE',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.messageTitle,
+                    style: const TextStyle(
                       color: Color(0xFF666666),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -195,13 +211,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       maxLines: 5,
                       maxLength: 2000,
                       style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your message...',
-                        hintStyle: TextStyle(color: Color(0xFF666666)),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.enterMessage,
+                        hintStyle: const TextStyle(color: Color(0xFF666666)),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
-                        counterStyle: TextStyle(color: Color(0xFF666666)),
+                        counterStyle: const TextStyle(color: Color(0xFF666666)),
                       ),
                     ),
                   ),
@@ -209,9 +225,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   const SizedBox(height: 24),
 
                   // Contacts
-                  const Text(
-                    'CONTACTS',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.contacts,
+                    style: const TextStyle(
                       color: Color(0xFF666666),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -230,9 +246,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'ATTACHMENTS',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.attachments,
+                        style: const TextStyle(
                           color: Color(0xFF666666),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -240,17 +256,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ),
                       InkWell(
                         onTap: state.isUploading ? null : _pickFile,
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.add_sharp,
                               color: AppTheme.primaryColor,
                               size: 16,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
-                              'ADD FILE',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.addFile,
+                              style: const TextStyle(
                                 color: AppTheme.primaryColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
@@ -263,7 +279,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
                   const SizedBox(height: 8),
                   if (state.isUploading)
-                    const FileUploadProgressCard(filename: "Uploading..."),
+                    FileUploadProgressCard(
+                      filename: AppLocalizations.of(context)!.uploading,
+                    ),
 
                   ...state.uploadedFiles.map(
                     (file) => FileUploadCard(
@@ -296,9 +314,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Text(
-                              'INITIATE SENTINEL',
-                              style: TextStyle(
+                          : Text(
+                              AppLocalizations.of(context)!.initiateSentinel,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class TimerSegmentControl extends StatefulWidget {
   final bool isDurationMode;
@@ -53,7 +54,7 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
             children: [
               Expanded(
                 child: _buildSegmentButton(
-                  label: 'DURATION',
+                  label: AppLocalizations.of(context)!.duration,
                   isSelected: widget.isDurationMode,
                   onTap: () => widget.onModeChanged(true),
                 ),
@@ -61,7 +62,7 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
               Container(width: 1, color: Colors.black),
               Expanded(
                 child: _buildSegmentButton(
-                  label: 'DATE',
+                  label: AppLocalizations.of(context)!.date,
                   isSelected: !widget.isDurationMode,
                   onTap: () => widget.onModeChanged(false),
                 ),
@@ -93,7 +94,9 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
+            color: isSelected
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.5),
             fontWeight: FontWeight.bold,
             letterSpacing: 1.0,
           ),
@@ -181,7 +184,7 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
             LengthLimitingTextInputFormatter(2),
           ],
           onChanged: (value) {
-            onChanged(int.tryParse(value));
+            onChanged(int.tryParse(value) ?? 0);
           },
         ),
       ),

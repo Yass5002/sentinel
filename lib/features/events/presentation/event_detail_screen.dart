@@ -5,11 +5,13 @@ import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/presentation/event_detail_provider.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 import 'package:open_file/open_file.dart';
 import 'package:sentinel/features/files/data/file_repository.dart';
 import 'package:sentinel/features/files/domain/file_model.dart';
+import 'package:sentinel/core/theme/font_utils.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class EventDetailScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -52,14 +54,15 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       ); // OpenFile will safely handle IO permissions
       if (result.type != ResultType.done && mounted) {
         setState(() {
-          _downloadError = 'Failed to open file: ${result.message}';
+          _downloadError = AppLocalizations.of(
+            context,
+          )!.failedToOpenFile(result.message);
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _downloadError =
-              'Failed to download file'; // inline error matching app theme
+          _downloadError = AppLocalizations.of(context)!.failedToDownloadFile;
         });
       }
     } finally {
@@ -103,7 +106,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           child: Container(
             width: double.infinity,
             color: Colors.black,
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -111,8 +114,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
-                      child: const Icon(
-                        Icons.arrow_back,
+                      child: Icon(
+                        Directionality.of(context) == TextDirection.rtl
+                            ? Icons.arrow_forward_sharp
+                            : Icons.arrow_back_sharp,
                         color: Colors.white,
                         size: 24,
                       ),
@@ -144,29 +149,35 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   backgroundColor: AppTheme.darkSurface,
-                                  title: const Text(
-                                    'Delete Event',
-                                    style: TextStyle(color: Colors.white),
+                                  title: Text(
+                                    AppLocalizations.of(context)!.deleteEvent,
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                  content: const Text(
-                                    'Are you sure you want to permanently delete this event from your history?',
-                                    style: TextStyle(color: Colors.white70),
+                                  content: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.deleteEventHistoryConfirm,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                    ),
                                   ),
                                   actions: [
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.of(context).pop(false),
-                                      child: const Text(
-                                        'Cancel',
-                                        style: TextStyle(color: Colors.white),
+                                      child: Text(
+                                        AppLocalizations.of(context)!.cancel,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.of(context).pop(true),
-                                      child: const Text(
-                                        'Delete',
-                                        style: TextStyle(
+                                      child: Text(
+                                        AppLocalizations.of(context)!.delete,
+                                        style: const TextStyle(
                                           color: AppTheme.errorColor,
                                         ),
                                       ),
@@ -207,13 +218,15 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               children: [
                 _buildStatusHeader(event),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Message Block
                       if (event.message?.isNotEmpty == true) ...[
-                        _buildSectionTitle('MESSAGE'),
+                        _buildSectionTitle(
+                          AppLocalizations.of(context)!.messageTitle,
+                        ),
                         const SizedBox(height: 4),
                         Container(
                           width: double.infinity,
@@ -232,7 +245,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                       ],
 
                       // Recipients
-                      _buildSectionTitle('RECIPIENTS'),
+                      _buildSectionTitle(
+                        AppLocalizations.of(context)!.recipients,
+                      ),
                       const SizedBox(height: 4),
                       SizedBox(
                         height: 90,
@@ -246,7 +261,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                           itemBuilder: (context, index) {
                             if (event.contacts.isEmpty) {
                               return _buildContactCard(
-                                name: 'NO RECIPIENTS',
+                                name: AppLocalizations.of(
+                                  context,
+                                )!.noRecipients,
                                 email: '',
                                 status: 'NONE',
                                 statusColor: Colors.grey,
@@ -259,17 +276,23 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                       ? contact.email.split('@')[0]
                                       : 'Unknown');
 
-                            String statusText = 'PENDING';
+                            String statusText = AppLocalizations.of(
+                              context,
+                            )!.pending;
                             Color statusColor = Colors.grey;
 
                             if (event.fired) {
-                              statusText = 'SENT';
+                              statusText = AppLocalizations.of(
+                                context,
+                              )!.alertsSent;
                               statusColor = AppTheme.errorColor;
                             } else if (event.checkedIn) {
-                              statusText = 'SAFE';
+                              statusText = AppLocalizations.of(context)!.safe;
                               statusColor = Colors.green;
                             } else if (event.terminated) {
-                              statusText = 'CANCELLED';
+                              statusText = AppLocalizations.of(
+                                context,
+                              )!.cancelled;
                               statusColor = Colors.grey;
                             }
 
@@ -286,7 +309,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
                       // Attachments
                       if (event.attachments.isNotEmpty) ...[
-                        _buildSectionTitle('ATTACHMENTS'),
+                        _buildSectionTitle(
+                          AppLocalizations.of(context)!.attachments,
+                        ),
                         if (_downloadError != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
@@ -334,10 +359,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                     Expanded(
                                       child: Text(
                                         file.filename,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 14,
-                                          fontFamily: 'Courier',
+                                          fontFamily: FontUtils.getCourierFont(
+                                            context,
+                                          ),
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -349,7 +376,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                           alpha: 0.5,
                                         ),
                                         fontSize: 12,
-                                        fontFamily: 'Courier',
+                                        fontFamily: FontUtils.getCourierFont(
+                                          context,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -372,10 +401,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          'CREATED ${DateFormat('MMM d, yyyy · HH:mm').format(event.createdAt).toUpperCase()}',
+                          '${AppLocalizations.of(context)!.created} ${DateFormat('MMM d, yyyy · HH:mm').format(event.createdAt).toUpperCase()}',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.5),
-                            fontFamily: 'Courier',
+                            fontFamily: FontUtils.getCourierFont(context),
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
@@ -400,16 +429,16 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
     if (event.checkedIn) {
       bgColor = const Color(0xFF1B5E20); // Dark Green
-      text = 'CHECKED IN';
+      text = AppLocalizations.of(context)!.safe.toUpperCase();
     } else if (event.fired) {
       bgColor = const Color(0xFFB71C1C); // Deep Red
-      text = 'ALERTS SENT';
+      text = AppLocalizations.of(context)!.alertsSent;
     } else if (event.terminated) {
       bgColor = AppTheme.darkSurface;
-      text = 'CANCELLED';
+      text = AppLocalizations.of(context)!.cancelled;
     } else {
       bgColor = AppTheme.primaryColor;
-      text = 'ACTIVE';
+      text = AppLocalizations.of(context)!.active;
     }
 
     final date = event.updatedAt;
@@ -439,9 +468,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               const SizedBox(height: 12),
               Text(
                 dateStr,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white70,
-                  fontFamily: 'Courier',
+                  fontFamily: FontUtils.getCourierFont(context),
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,

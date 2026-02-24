@@ -49,6 +49,9 @@ class LocationTrackingService : Service() {
     private var locationCallback: LocationCallback? = null
     private var jwt: String? = null
     private var baseUrl: String? = null
+    private var notifTitle: String? = null
+    private var notifBody: String? = null
+    private var notifDesc: String? = null
     private var httpClient: OkHttpClient? = null
     private var executor: ExecutorService? = null
     private var locationHandlerThread: HandlerThread? = null
@@ -77,6 +80,9 @@ class LocationTrackingService : Service() {
         // Extract JWT and baseUrl from intent (START_REDELIVER_INTENT will provide original intent on restart)
         jwt = intent?.getStringExtra("jwt")
         baseUrl = intent?.getStringExtra("baseUrl")
+        notifTitle = intent?.getStringExtra("notifTitle")
+        notifBody = intent?.getStringExtra("notifBody")
+        notifDesc = intent?.getStringExtra("notifDesc")
 
         if (jwt.isNullOrEmpty() || baseUrl.isNullOrEmpty()) {
             Log.w(TAG, "No JWT or Base URL available — stopping service")
@@ -84,9 +90,10 @@ class LocationTrackingService : Service() {
             return START_NOT_STICKY
         }
 
-        // If already running, this is idempotent — just update JWT
+        // If already running, update JWT and notification strings then return
         if (isRunning) {
-            Log.d(TAG, "Service already running — JWT updated")
+            Log.d(TAG, "Service already running — updating configuration")
+            startForegroundNotification()
             return START_REDELIVER_INTENT
         }
 
@@ -107,8 +114,8 @@ class LocationTrackingService : Service() {
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Sentinel")
-            .setContentText("Sentinel is tracking your location")
+            .setContentTitle(notifTitle ?: getString(R.string.app_name))
+            .setContentText(notifBody ?: getString(R.string.location_tracking_body))
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_stat_sentinel)
             .setOngoing(true)
@@ -330,10 +337,10 @@ class LocationTrackingService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Location tracking",
+                notifTitle ?: getString(R.string.location_tracking_title),
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Shows when Sentinel is tracking your location"
+                description = notifDesc ?: getString(R.string.location_tracking_description)
                 setShowBadge(false)
             }
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

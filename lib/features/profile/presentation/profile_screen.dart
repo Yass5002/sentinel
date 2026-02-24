@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/profile/presentation/profile_provider.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -16,13 +17,17 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'PROFILE',
-          style: TextStyle(letterSpacing: 2.0, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.profile,
+          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_sharp),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_sharp
+                : Icons.arrow_back_sharp,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -104,13 +109,16 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 32),
 
               // Email
-              _buildInfoRow('EMAIL', user.email),
+              _buildInfoRow(
+                AppLocalizations.of(context)!.emailHint.toUpperCase(),
+                user.email,
+              ),
 
               const SizedBox(height: 24),
 
               // Member since
               _buildInfoRow(
-                'MEMBER SINCE',
+                AppLocalizations.of(context)!.memberSince,
                 DateFormat('MMMM d, yyyy').format(user.createdAt),
               ),
             ],
@@ -249,9 +257,9 @@ class _EditNameSheetState extends State<_EditNameSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Edit name',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.editNameTitle,
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -259,9 +267,9 @@ class _EditNameSheetState extends State<_EditNameSheet> {
           ),
           const SizedBox(height: 24),
 
-          const Text(
-            'NAME',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.nameHint.toUpperCase(),
+            style: const TextStyle(
               color: AppTheme.primaryColor,
               fontWeight: FontWeight.bold,
               fontSize: 12,
@@ -275,10 +283,10 @@ class _EditNameSheetState extends State<_EditNameSheet> {
               controller: _nameController,
               autofocus: true,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Your name',
-                hintStyle: TextStyle(color: Color(0xFF666666)),
+                hintText: AppLocalizations.of(context)!.nameHint,
+                hintStyle: const TextStyle(color: Color(0xFF666666)),
               ),
             ),
           ),
@@ -319,7 +327,9 @@ class _EditNameSheetState extends State<_EditNameSheet> {
                       ),
                     )
                   : Text(
-                      _saved ? 'Saved' : 'Save',
+                      _saved
+                          ? AppLocalizations.of(context)!.save
+                          : AppLocalizations.of(context)!.save,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

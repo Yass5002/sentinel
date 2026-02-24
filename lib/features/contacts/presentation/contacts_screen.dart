@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 import 'package:sentinel/features/contacts/domain/contact_model.dart';
 import 'package:sentinel/features/contacts/presentation/contacts_provider.dart';
 
@@ -17,13 +18,17 @@ class ContactsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'CONTACTS',
-          style: TextStyle(letterSpacing: 2.0, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.contacts.toUpperCase(),
+          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_sharp),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_sharp
+                : Icons.arrow_back_sharp,
+          ),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -62,7 +67,7 @@ class ContactsScreen extends ConsumerWidget {
           },
           loading: () => _buildShimmerLoading(),
           error: (err, _) => CustomErrorWidget(
-            message: 'Failed to load contacts',
+            message: AppLocalizations.of(context)!.failedToLoadContacts,
             onRetry: () => ref.invalidate(contactsNotifierProvider),
           ),
         ),
@@ -88,7 +93,7 @@ class ContactsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No saved contacts',
+                    AppLocalizations.of(context)!.noSavedContacts,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.4),
                       fontSize: 16,
@@ -106,9 +111,9 @@ class ContactsScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
-                      child: const Text(
-                        'Add contact',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.addContact,
+                        style: const TextStyle(
                           color: AppTheme.primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
@@ -179,20 +184,23 @@ class ContactsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
-        title: const Text(
-          'Delete contact',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          AppLocalizations.of(ctx)!.deleteContactTitle,
+          style: const TextStyle(color: Colors.white),
         ),
         content: Text(
           contact.name.isNotEmpty
-              ? '${contact.name} (${contact.email}) will be removed from your saved contacts.'
-              : '${contact.email} will be removed from your saved contacts.',
+              ? '${contact.name} (${contact.email}) ${AppLocalizations.of(ctx)!.deleteContactConfirm}'
+              : '${contact.email} ${AppLocalizations.of(ctx)!.deleteContactConfirm}',
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(ctx)!.cancel,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -201,9 +209,9 @@ class ContactsScreen extends ConsumerWidget {
                   .read(contactsNotifierProvider.notifier)
                   .deleteContact(contact.id);
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: AppTheme.errorColor),
+            child: Text(
+              AppLocalizations.of(ctx)!.delete,
+              style: const TextStyle(color: AppTheme.errorColor),
             ),
           ),
         ],
@@ -236,7 +244,7 @@ class _ContactTile extends StatelessWidget {
       },
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
+        padding: const EdgeInsetsDirectional.only(end: 24),
         color: AppTheme.errorColor,
         child: const Icon(Icons.delete_sharp, color: Colors.white),
       ),
@@ -331,11 +339,11 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
     });
 
     if (email.isEmpty) {
-      setState(() => _emailError = 'Email is required');
+      setState(() => _emailError = AppLocalizations.of(context)!.emailRequired);
       return;
     }
     if (!_isValidEmail(email)) {
-      setState(() => _emailError = 'Enter a valid email address');
+      setState(() => _emailError = AppLocalizations.of(context)!.emailInvalid);
       return;
     }
 
@@ -380,7 +388,9 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            isEditing ? 'Edit contact' : 'Add contact',
+            isEditing
+                ? AppLocalizations.of(context)!.editNameTitle
+                : AppLocalizations.of(context)!.addContact,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -423,16 +433,16 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'email@example.com',
-                hintStyle: TextStyle(color: Color(0xFF666666)),
+                hintText: AppLocalizations.of(context)!.emailExample,
+                hintStyle: const TextStyle(color: Color(0xFF666666)),
               ),
             ),
           ),
           if (_emailError != null)
             Padding(
-              padding: const EdgeInsets.only(top: 6, left: 4),
+              padding: const EdgeInsetsDirectional.only(top: 6, start: 4),
               child: Text(
                 _emailError!,
                 style: const TextStyle(
@@ -460,10 +470,10 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
             child: TextField(
               controller: _nameController,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Contact name',
-                hintStyle: TextStyle(color: Color(0xFF666666)),
+                hintText: AppLocalizations.of(context)!.contactNameHint,
+                hintStyle: const TextStyle(color: Color(0xFF666666)),
               ),
             ),
           ),
@@ -492,9 +502,9 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(
-                      'Save',
-                      style: TextStyle(
+                  : Text(
+                      AppLocalizations.of(context)!.save,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

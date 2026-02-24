@@ -58,6 +58,7 @@ class CreateEventNotifier extends _$CreateEventNotifier {
       durationHours: h ?? state.durationHours,
       durationMinutes: m ?? state.durationMinutes,
       durationSeconds: s ?? state.durationSeconds,
+      error: null,
     );
   }
 

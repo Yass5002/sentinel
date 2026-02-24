@@ -11,6 +11,9 @@ import 'package:sentinel/core/storage/secure_storage_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
+import 'package:sentinel/features/settings/locale_provider.dart';
+import 'package:flag/flag.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -95,24 +98,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
-        title: const Text('Log out', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Are you sure you want to log out?',
-          style: TextStyle(color: Colors.white70),
+        title: Text(
+          AppLocalizations.of(context)!.logOut,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          AppLocalizations.of(context)!.logOutConfirmBody,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               _performLogout();
             },
-            child: const Text(
-              'Log out',
-              style: TextStyle(color: AppTheme.errorColor),
+            child: Text(
+              AppLocalizations.of(context)!.logOut,
+              style: const TextStyle(color: AppTheme.errorColor),
             ),
           ),
         ],
@@ -145,24 +154,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
-        title: const Text(
-          'Delete Account',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.deleteAccount,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppLocalizations.of(context)!.deleteAccountConfirmBody,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: AppTheme.errorColor),
+            child: Text(
+              AppLocalizations.of(context)!.delete,
+              style: const TextStyle(color: AppTheme.errorColor),
             ),
           ),
         ],
@@ -183,7 +195,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       } catch (e) {
         if (mounted) {
           setState(() {
-            _deleteAccountError = 'Failed to delete account. Please try again.';
+            _deleteAccountError = AppLocalizations.of(
+              context,
+            )!.failedToDeleteAccount;
           });
         }
       } finally {
@@ -196,6 +210,92 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     }
   }
 
+  List<Map<String, dynamic>> _getLocalizedLanguages(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {'code': 'en', 'name': l10n.english, 'flag': FlagsCode.US},
+      {'code': 'fr', 'name': l10n.french, 'flag': FlagsCode.FR},
+      {'code': 'es', 'name': l10n.spanish, 'flag': FlagsCode.ES},
+      {'code': 'ar', 'name': l10n.arabic, 'flag': FlagsCode.MA},
+      {'code': 'zh', 'name': l10n.chinese, 'flag': FlagsCode.CN},
+    ];
+  }
+
+  void _showLanguagePicker() {
+    final l10n = AppLocalizations.of(context)!;
+    final languages = _getLocalizedLanguages(context);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.darkSurface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      builder: (context) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final locale = ref.watch(localeNotifierProvider);
+            final currentCode = locale?.languageCode ?? 'en';
+
+            return SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      l10n.language,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ...languages.map((lang) {
+                    final isSelected = currentCode == lang['code'];
+                    return ListTile(
+                      title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flag.fromCode(
+                            lang['flag'],
+                            height: 20,
+                            width: 28,
+                            borderRadius: 4,
+                          ),
+                          const SizedBox(width: 16),
+                          Text(
+                            lang['name']!,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.white70,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: AppTheme.primaryColor,
+                            )
+                          : null,
+                      onTap: () async {
+                        await ref
+                            .read(localeNotifierProvider.notifier)
+                            .setLocale(Locale(lang['code']!));
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    );
+                  }),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final prefs = ref.watch(preferencesServiceProvider);
@@ -205,30 +305,83 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'SETTINGS',
-          style: TextStyle(letterSpacing: 2.0, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.settings,
+          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_sharp),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_sharp
+                : Icons.arrow_back_sharp,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // --- LANGUAGE ---
+          _buildSectionHeader(
+            AppLocalizations.of(context)!.language.toUpperCase(),
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            title: Text(
+              AppLocalizations.of(context)!.appLanguage,
+              style: const TextStyle(color: Colors.white),
+            ),
+            subtitle: Consumer(
+              builder: (context, ref, child) {
+                final locale = ref.watch(localeNotifierProvider);
+                final currentCode = locale?.languageCode ?? 'en';
+                final languages = _getLocalizedLanguages(context);
+                final lang = languages.firstWhere(
+                  (lang) => lang['code'] == currentCode,
+                  orElse: () => languages.first,
+                );
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flag.fromCode(
+                      lang['flag'],
+                      height: 16,
+                      width: 22,
+                      borderRadius: 2,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      lang['name']!,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                );
+              },
+            ),
+            trailing: Icon(
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.arrow_back_ios_sharp
+                  : Icons.arrow_forward_ios_sharp,
+              color: Colors.grey,
+              size: 16,
+            ),
+            onTap: _showLanguagePicker,
+          ),
+
+          const SizedBox(height: 32),
+
           // --- NOTIFICATIONS ---
-          _buildSectionHeader('NOTIFICATIONS'),
+          _buildSectionHeader(AppLocalizations.of(context)!.notifications),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text(
-              'Check-in reminders',
-              style: TextStyle(color: Colors.white),
+            title: Text(
+              AppLocalizations.of(context)!.checkInReminders,
+              style: const TextStyle(color: Colors.white),
             ),
-            subtitle: const Text(
-              'Get alerted 1h, 15m, and 5m before your Sentinels expire.',
-              style: TextStyle(color: Colors.grey),
+            subtitle: Text(
+              AppLocalizations.of(context)!.checkInRemindersSub,
+              style: const TextStyle(color: Colors.grey),
             ),
             value: isNotifEnabled,
             activeThumbColor: AppTheme.primaryColor,
@@ -257,16 +410,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(height: 32),
 
           // --- LOCATION ---
-          _buildSectionHeader('LOCATION'),
+          _buildSectionHeader(AppLocalizations.of(context)!.location),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text(
-              'Location tracking',
-              style: TextStyle(color: Colors.white),
+            title: Text(
+              AppLocalizations.of(context)!.locationTracking,
+              style: const TextStyle(color: Colors.white),
             ),
-            subtitle: const Text(
-              'Share your location with emergency contacts while events are active.',
-              style: TextStyle(color: Colors.grey),
+            subtitle: Text(
+              AppLocalizations.of(context)!.locationTrackingSub,
+              style: const TextStyle(color: Colors.grey),
             ),
             value: isLocationEnabled,
             activeThumbColor: AppTheme.primaryColor,
@@ -274,15 +427,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               if (val) {
                 if (_osLocationPermissionGranted) {
                   await prefs.setLocationTrackingEnabled(true);
-                  ref.read(locationTrackingManagerProvider).syncTrackingState();
+                  final l10n = AppLocalizations.of(context)!;
+                  ref
+                      .read(locationTrackingManagerProvider)
+                      .syncTrackingState(
+                        notifTitle: l10n.notifTrackingTitle,
+                        notifBody: l10n.notifTrackingBody,
+                        notifDesc: l10n.notifTrackingDesc,
+                      );
                 } else {
                   final status = await Permission.locationWhenInUse.request();
                   if (status.isGranted) {
                     await prefs.setLocationTrackingEnabled(true);
                     _checkOsLocationPermission();
+                    if (!context.mounted) return;
+                    final l10n = AppLocalizations.of(context)!;
                     ref
                         .read(locationTrackingManagerProvider)
-                        .syncTrackingState();
+                        .syncTrackingState(
+                          notifTitle: l10n.notifTrackingTitle,
+                          notifBody: l10n.notifTrackingBody,
+                          notifDesc: l10n.notifTrackingDesc,
+                        );
                   } else if (status.isPermanentlyDenied) {
                     openAppSettings();
                   }
@@ -296,12 +462,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           ),
           if (isLocationEnabled && !_osLocationPermissionGranted)
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ).copyWith(top: 8),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Location access is blocked by your device settings',
+                      AppLocalizations.of(context)!.locationBlocked,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 13,
@@ -315,9 +483,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         borderRadius: BorderRadius.zero,
                       ),
                     ),
-                    child: const Text(
-                      'Open settings',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.openSettings,
+                      style: const TextStyle(
                         color: AppTheme.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
@@ -330,7 +498,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(height: 32),
 
           // --- ACCOUNT ---
-          _buildSectionHeader('ACCOUNT'),
+          _buildSectionHeader(AppLocalizations.of(context)!.account),
           const SizedBox(height: 16),
           SizedBox(
             height: 48,
@@ -342,9 +510,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   borderRadius: BorderRadius.zero,
                 ),
               ),
-              child: const Text(
-                'Log out',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.logOut,
+                style: const TextStyle(
                   color: AppTheme.errorColor,
                   fontWeight: FontWeight.bold,
                 ),
@@ -355,7 +523,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(height: 32),
 
           // --- DANGER ZONE ---
-          _buildSectionHeader('DANGER ZONE'),
+          _buildSectionHeader(AppLocalizations.of(context)!.dangerZone),
           const SizedBox(height: 16),
           if (_deleteAccountError != null)
             Padding(
@@ -382,10 +550,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
               ),
               child: _isDeletingAccount
-                  ? const Row(
+                  ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -395,19 +563,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             ),
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
-                          'Deleting...',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.deleting,
+                          style: const TextStyle(
                             color: AppTheme.errorColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     )
-                  : const Text(
-                      'Delete Account',
-                      style: TextStyle(
+                  : Text(
+                      AppLocalizations.of(context)!.deleteAccount,
+                      style: const TextStyle(
                         color: AppTheme.errorColor,
                         fontWeight: FontWeight.bold,
                       ),
@@ -417,15 +585,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(height: 48),
 
           // --- ABOUT ---
-          _buildSectionHeader('ABOUT'),
+          _buildSectionHeader(AppLocalizations.of(context)!.about),
           const SizedBox(height: 16),
           _buildAboutLink(
-            'Privacy policy',
+            AppLocalizations.of(context)!.privacyPolicy,
             'https://sentinel.yssn.tech/privacy',
           ),
           const SizedBox(height: 16),
           _buildAboutLink(
-            'Terms of service',
+            AppLocalizations.of(context)!.termsOfService,
             'https://sentinel.yssn.tech/terms',
           ),
           const SizedBox(height: 48),
@@ -458,7 +626,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
             Icon(
-              Icons.arrow_forward_ios_sharp,
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.arrow_back_ios_sharp
+                  : Icons.arrow_forward_ios_sharp,
               color: Colors.white.withValues(alpha: 0.3),
               size: 14,
             ),

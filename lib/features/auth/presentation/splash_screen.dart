@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -45,16 +46,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black, // Pure black
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40.0),
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              'SENTINEL',
-              style: TextStyle(
+              AppLocalizations.of(context)!.appTitle,
+              style: const TextStyle(
                 fontFamily: 'SentinelBrand',
                 fontSize: 64,
                 color: AppTheme.primaryColor,

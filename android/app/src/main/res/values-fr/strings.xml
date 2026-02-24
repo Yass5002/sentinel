@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SENTINEL</string>
+    <string name="countdown_title">Compte à rebours SENTINEL</string>
+    <string name="countdown_description">Affiche le minuteur de compte à rebours actif</string>
+    <string name="emergency_alert_body">Les alertes d\'urgence se déclencheront lorsque le minuteur atteindra zéro. Appuyez pour vous enregistrer.</string>
+    <string name="unknown_event">Événement inconnu</string>
+    <string name="location_tracking_title">Suivi de localisation</string>
+    <string name="location_tracking_body">SENTINEL suit votre position</string>
+    <string name="location_tracking_description">Indique quand SENTINEL suit votre position</string>
+</resources>

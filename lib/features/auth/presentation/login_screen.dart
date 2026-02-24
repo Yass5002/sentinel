@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/features/auth/data/auth_repository.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -66,14 +67,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const Spacer(flex: 3),
 
               // Wordmark (Centered & Responsive)
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      'SENTINEL',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.sentinelBrand,
+                      style: const TextStyle(
                         fontFamily: 'SentinelBrand',
                         fontSize: 56,
                         color: AppTheme.primaryColor,
@@ -85,9 +86,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
 
               const SizedBox(height: 48), // Increased gap from logo to text
-              const Text(
-                'Enter your email to get started',
-                style: TextStyle(color: AppTheme.lightGreyText, fontSize: 16),
+              Text(
+                AppLocalizations.of(context)!.loginTitle,
+                style: const TextStyle(
+                  color: AppTheme.lightGreyText,
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 16), // Small fixed gap to input
 
@@ -107,16 +111,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           if (_errorMessage != null) _errorMessage = null;
                         });
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         // Removed labelText to prevent floating label
-                        hintText: 'Email',
+                        hintText: AppLocalizations.of(context)!.emailHint,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Email is required';
+                          return AppLocalizations.of(context)!.emailRequired;
                         }
                         if (!emailRegex.hasMatch(value)) {
-                          return 'Please enter a valid email';
+                          return AppLocalizations.of(context)!.emailInvalid;
                         }
                         return null;
                       },
@@ -132,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             color: Color(0xFFD32F2F),
                             fontSize: 14,
                           ),
-                          textAlign: TextAlign.left,
+                          textAlign: TextAlign.start,
                         ),
                       ),
 
@@ -156,7 +160,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('GET STARTED'),
+                            : Text(AppLocalizations.of(context)!.getStarted),
                       ),
                     ),
                   ],

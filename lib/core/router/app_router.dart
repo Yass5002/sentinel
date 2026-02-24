@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
+import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/features/auth/presentation/login_screen.dart';
 import 'package:sentinel/features/auth/presentation/otp_screen.dart';
 import 'package:sentinel/features/auth/presentation/splash_screen.dart';
+import 'package:sentinel/features/settings/presentation/language_selection_screen.dart';
 import 'package:sentinel/features/contacts/presentation/contacts_screen.dart';
 import 'package:sentinel/features/events/presentation/create_event_screen.dart';
 import 'package:sentinel/features/events/presentation/active_event_screen.dart';
@@ -24,15 +26,28 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) async {
       // Use the shared Riverpod-provided instance instead of creating a new one
       final storage = ref.read(secureStorageProvider);
+      final prefs = ref.read(preferencesServiceProvider);
       final token = await storage.getToken();
       final isLoggedIn = token != null;
+      final hasShownLanguage = prefs.hasShownLanguageSelection;
 
       final path = state.uri.path;
       final isLoginRoute = path == '/login';
       final isOtpRoute = path == '/otp';
       final isSplashRoute = path == '/splash';
+      final isLanguageRoute = path == '/language';
 
-      if (isSplashRoute) return null; // Let splash handle its own logic
+      if (!hasShownLanguage && !isLanguageRoute) {
+        return '/language';
+      }
+
+      if (hasShownLanguage && isLanguageRoute) {
+        return '/splash';
+      }
+
+      if (isSplashRoute || isLanguageRoute) {
+        return null; // Let them handle their logic
+      }
 
       if (!isLoggedIn && !isLoginRoute && !isOtpRoute) {
         return '/login';
@@ -45,6 +60,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/language',
+        builder: (context, state) => const LanguageSelectionScreen(),
+      ),
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),

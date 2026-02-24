@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SENTINEL</string>
+    <string name="countdown_title">SENTINEL Countdown</string>
+    <string name="countdown_description">Displays the active countdown timer</string>
+    <string name="emergency_alert_body">Emergency alerts will trigger when the timer reaches zero. Tap to check in.</string>
+    <string name="unknown_event">Unknown Event</string>
+    <string name="location_tracking_title">Location tracking</string>
+    <string name="location_tracking_body">SENTINEL is tracking your location</string>
+    <string name="location_tracking_description">Shows when SENTINEL is tracking your location</string>
+</resources>

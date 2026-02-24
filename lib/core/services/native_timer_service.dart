@@ -14,6 +14,10 @@ class NativeTimerService {
     required DateTime triggerAt,
     required DateTime expiresAt,
     required Duration timeDelta,
+    required String notificationChannelName,
+    required String notificationChannelDesc,
+    required String notificationTitle,
+    required String notificationBody,
   }) async {
     // IMPORTANT: Both timestamps are adjusted from server-time to device-local time
     // here on the Dart side. The native Kotlin code (SentinelTimerService) compares
@@ -30,6 +34,10 @@ class NativeTimerService {
         'eventName': eventName,
         'triggerAtMs': triggerAtMs,
         'expiryEpochMs': expiryEpochMs,
+        'notifChannelName': notificationChannelName,
+        'notifChannelDesc': notificationChannelDesc,
+        'notifTitle': notificationTitle,
+        'notifBody': notificationBody,
       });
       return result ?? false;
     } on PlatformException {

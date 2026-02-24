@@ -42,8 +42,12 @@ class TimerAlarmReceiver : BroadcastReceiver() {
         wakeLock?.acquire(60 * 1000L)
 
         val expiryEpochMs = intent.getLongExtra("expiryEpochMs", 0L)
-        val eventName = intent.getStringExtra("eventName") ?: "Unknown"
+        val eventName = intent.getStringExtra("eventName") ?: context.getString(R.string.unknown_event)
         val eventId = intent.getStringExtra("eventId") ?: ""
+        val notifChannelName = intent.getStringExtra("notifChannelName")
+        val notifChannelDesc = intent.getStringExtra("notifChannelDesc")
+        val notifTitle = intent.getStringExtra("notifTitle")
+        val notifBody = intent.getStringExtra("notifBody")
 
         // Clean up the persisted alarm entry now that it has fired
         if (eventId.isNotEmpty()) {
@@ -55,6 +59,10 @@ class TimerAlarmReceiver : BroadcastReceiver() {
             putExtra("expiryEpochMs", expiryEpochMs)
             putExtra("eventName", eventName)
             putExtra("eventId", eventId)
+            putExtra("notifChannelName", notifChannelName)
+            putExtra("notifChannelDesc", notifChannelDesc)
+            putExtra("notifTitle", notifTitle)
+            putExtra("notifBody", notifBody)
         }
 
         // Starting foreground service from exact alarm broadcast is allowed on API 31+.

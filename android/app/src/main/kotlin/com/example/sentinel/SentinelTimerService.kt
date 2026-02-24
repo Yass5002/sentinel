@@ -29,6 +29,10 @@ class SentinelTimerService : Service() {
     data class TimerEvent(val eventId: String, val eventName: String, val expiryEpochMs: Long)
 
     private val eventQueue = mutableListOf<TimerEvent>()
+    private var notifChannelName: String? = null
+    private var notifChannelDesc: String? = null
+    private var notifTitle: String? = null
+    private var notifBody: String? = null
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -62,7 +66,13 @@ class SentinelTimerService : Service() {
 
         // Action is ACTION_START
         val expiryEpochMs = intent?.getLongExtra("expiryEpochMs", 0L) ?: 0L
-        val eventName = intent?.getStringExtra("eventName") ?: "Unknown"
+        val eventName = intent?.getStringExtra("eventName") ?: getString(R.string.unknown_event)
+
+        // Extract localized strings
+        notifChannelName = intent?.getStringExtra("notifChannelName")
+        notifChannelDesc = intent?.getStringExtra("notifChannelDesc")
+        notifTitle = intent?.getStringExtra("notifTitle")
+        notifBody = intent?.getStringExtra("notifBody")
 
         if (eventId.isNotEmpty()) {
             val targetEpochMs = if (expiryEpochMs > 0L) {
@@ -110,8 +120,8 @@ class SentinelTimerService : Service() {
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(topEvent.eventName)
-            .setContentText("Emergency alerts will trigger when the timer reaches zero. Tap to check in.")
+            .setContentTitle(notifTitle ?: topEvent.eventName)
+            .setContentText(notifBody ?: getString(R.string.emergency_alert_body))
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_stat_sentinel)
             .setOngoing(true)
@@ -183,8 +193,8 @@ class SentinelTimerService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Sentinel Countdown"
-            val descriptionText = "Displays the active countdown timer"
+            val name = notifChannelName ?: getString(R.string.countdown_title)
+            val descriptionText = notifChannelDesc ?: getString(R.string.countdown_description)
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText

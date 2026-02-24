@@ -100,4 +100,19 @@ class PreferencesService {
   Future<void> setLocationTrackingEnabled(bool enabled) async {
     await _prefs.setBool(_keyLocationTrackingEnabled, enabled);
   }
+
+  // --- Localization ---
+  static const _keySelectedLocale = 'selected_locale';
+  static const _keyLanguageSelectionShown = 'language_selection_shown';
+
+  String? get selectedLocale => _prefs.getString(_keySelectedLocale);
+  Future<void> setSelectedLocale(String languageCode) async {
+    await _prefs.setString(_keySelectedLocale, languageCode);
+  }
+
+  bool get hasShownLanguageSelection =>
+      _prefs.getBool(_keyLanguageSelectionShown) ?? false;
+  Future<void> setLanguageSelectionShown() async {
+    await _prefs.setBool(_keyLanguageSelectionShown, true);
+  }
 }

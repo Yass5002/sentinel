@@ -27,7 +27,11 @@ class LocationTrackingManager {
 
   /// Call this on app launch and whenever the event list changes.
   /// Evaluates the current state and starts/stops tracking as needed.
-  Future<void> syncTrackingState() async {
+  Future<void> syncTrackingState({
+    String? notifTitle,
+    String? notifBody,
+    String? notifDesc,
+  }) async {
     final locationService = _ref.read(nativeLocationServiceProvider);
     final prefs = _ref.read(preferencesServiceProvider);
 
@@ -45,10 +49,13 @@ class LocationTrackingManager {
       // Should be tracking — check if permission is granted
       final hasPermission = await _hasLocationPermission();
       if (hasPermission) {
-        final alreadyTracking = await locationService.isTracking();
-        if (!alreadyTracking) {
-          await locationService.startTracking();
-        }
+        // Always call startTracking to ensure localized strings are updated
+        // if the service is already running.
+        await locationService.startTracking(
+          notifTitle: notifTitle,
+          notifBody: notifBody,
+          notifDesc: notifDesc,
+        );
       } else {
         dev.log(
           'syncTrackingState: $activeCount active events but no location permission',
@@ -63,7 +70,11 @@ class LocationTrackingManager {
 
   /// Called when the active event count transitions from 0 → ≥1.
   /// Also checks active event count to avoid starting for nothing.
-  Future<void> startTrackingIfAllowed() async {
+  Future<void> startTrackingIfAllowed({
+    String? notifTitle,
+    String? notifBody,
+    String? notifDesc,
+  }) async {
     final prefs = _ref.read(preferencesServiceProvider);
     if (!prefs.locationTrackingEnabled) return;
 
@@ -74,7 +85,13 @@ class LocationTrackingManager {
     final activeCount = await _getActiveEventCount();
     if (activeCount <= 0) return;
 
-    await _ref.read(nativeLocationServiceProvider).startTracking();
+    await _ref
+        .read(nativeLocationServiceProvider)
+        .startTracking(
+          notifTitle: notifTitle,
+          notifBody: notifBody,
+          notifDesc: notifDesc,
+        );
   }
 
   /// Called when all active events have ended

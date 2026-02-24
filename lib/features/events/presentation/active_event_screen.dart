@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/font_utils.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/events/presentation/active_event_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
+import 'package:sentinel/core/services/location_tracking_provider.dart';
 
 enum _LocationBannerState { none, backgroundLimited, denied, disabledByUser }
 
@@ -32,6 +35,16 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
     super.initState();
     _startTimer();
     _checkLocationStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final l10n = AppLocalizations.of(context)!;
+      ref
+          .read(locationTrackingManagerProvider)
+          .syncTrackingState(
+            notifTitle: l10n.notifTrackingTitle,
+            notifBody: l10n.notifTrackingBody,
+            notifDesc: l10n.notifTrackingDesc,
+          );
+    });
   }
 
   @override
@@ -88,7 +101,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
       final hours = d.inHours % 24;
       final minutes = d.inMinutes % 60;
       final seconds = d.inSeconds % 60;
-      return '${days}d ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+      return '$days${AppLocalizations.of(context)!.days} ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
     } else {
       final hours = d.inHours;
       final minutes = d.inMinutes % 60;
@@ -113,6 +126,14 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
     if (success && mounted) {
       ref.invalidate(eventListProvider); // Refresh home list
+      final l10n = AppLocalizations.of(context)!;
+      ref
+          .read(locationTrackingManagerProvider)
+          .syncTrackingState(
+            notifTitle: l10n.notifTrackingTitle,
+            notifBody: l10n.notifTrackingBody,
+            notifDesc: l10n.notifTrackingDesc,
+          );
       context.go(
         '/',
       ); // Navigate to Home (clears stack effectively if using GoRouter correctly)
@@ -125,24 +146,30 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
-        title: const Text(
-          'CANCEL EVENT?',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.cancelEventTitle.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
-          'This will cancel the event and no alerts will be sent.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppLocalizations.of(context)!.cancelEventBody,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('KEEP', style: TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.keepButton,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'CANCEL EVENT',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)!.cancelEvent,
+              style: const TextStyle(
                 color: AppTheme.errorColor,
                 fontWeight: FontWeight.bold,
               ),
@@ -159,6 +186,14 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
       if (success && mounted) {
         ref.invalidate(eventListProvider);
+        final l10n = AppLocalizations.of(context)!;
+        ref
+            .read(locationTrackingManagerProvider)
+            .syncTrackingState(
+              notifTitle: l10n.notifTrackingTitle,
+              notifBody: l10n.notifTrackingBody,
+              notifDesc: l10n.notifTrackingDesc,
+            );
         context.go('/');
       }
     }
@@ -197,15 +232,17 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                 child: Center(
                   child: Text(
                     event.fired
-                        ? 'ALERTS SENT'
+                        ? AppLocalizations.of(context)!.alertsSent
                         : (event.terminated
-                              ? 'CANCELED'
+                              ? AppLocalizations.of(context)!.cancelled
                               : (_isExpired
-                                    ? 'ALERTS SENT'
+                                    ? AppLocalizations.of(context)!.alertsSent
                                     : _formatDuration(_remaining))),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: 'Courier', // Monospace
+                      fontFamily: FontUtils.getCourierFont(
+                        context,
+                      ), // Monospace with fallback
                       fontSize: (event.fired || _isExpired)
                           ? 40
                           : 56, // Adjust for longer text
@@ -221,9 +258,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
               // 2. Targeted Contacts Section
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
                 child: Text(
-                  'RECIPIENTS',
+                  AppLocalizations.of(context)!.recipients,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
@@ -244,8 +281,8 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                   itemBuilder: (context, index) {
                     if (event.contacts.isEmpty) {
                       return _buildContactCard(
-                        name: 'NO CONTACTS',
-                        status: 'NONE',
+                        name: AppLocalizations.of(context)!.noContacts,
+                        status: AppLocalizations.of(context)!.none,
                         statusColor: Colors.grey,
                       );
                     }
@@ -255,13 +292,15 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                         ? contact.name!
                         : (contact.email.isNotEmpty
                               ? contact.email.split('@')[0]
-                              : 'Unknown');
+                              : AppLocalizations.of(context)!.unknown);
 
                     return _buildContactCard(
                       name: displayName.toUpperCase(),
                       status: event.terminated
-                          ? 'CANCELLED'
-                          : (_isExpired ? 'ALERTS SENT' : 'PENDING'),
+                          ? AppLocalizations.of(context)!.cancelled
+                          : (_isExpired
+                                ? AppLocalizations.of(context)!.alertsSent
+                                : AppLocalizations.of(context)!.pending),
                       statusColor: event.terminated
                           ? Colors.grey
                           : (_isExpired
@@ -276,9 +315,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
               // 3. Briefing Block (Consolidated Details)
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
                 child: Text(
-                  'DETAILS',
+                  AppLocalizations.of(context)!.details,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
@@ -303,7 +342,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                     Text(
                       event.message?.isNotEmpty == true
                           ? event.message!
-                          : 'No message provided.',
+                          : AppLocalizations.of(context)!.noMessage,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -322,7 +361,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '${event.attachments.length} File${event.attachments.length == 1 ? '' : 's'}',
+                          AppLocalizations.of(
+                            context,
+                          )!.filesCount(event.attachments.length),
                           style: const TextStyle(
                             color: Colors.white70,
                             fontWeight: FontWeight.bold,
@@ -340,10 +381,12 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                         const SizedBox(width: 8),
                         Text(
                           _locationBanner == _LocationBannerState.none
-                              ? 'Tracking'
+                              ? AppLocalizations.of(context)!.tracking
                               : (_locationBanner == _LocationBannerState.denied
-                                    ? 'Location off'
-                                    : 'Limited'),
+                                    ? AppLocalizations.of(context)!.locationOff
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.locationLimited),
                           style: TextStyle(
                             color: _locationBanner == _LocationBannerState.none
                                 ? Colors.white70
@@ -374,9 +417,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                         !state.isCancelling)
                       TextButton(
                         onPressed: _handleCancel,
-                        child: const Text(
-                          'CANCEL EVENT',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.cancelEvent,
+                          style: const TextStyle(
                             color: Colors.white54,
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.bold,
@@ -414,8 +457,8 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                               )
                             : Text(
                                 event.terminated || _isExpired
-                                    ? 'RETURN TO HOME'
-                                    : 'I AM SAFE',
+                                    ? AppLocalizations.of(context)!.returnToHome
+                                    : AppLocalizations.of(context)!.iAmSafe,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color:
@@ -438,7 +481,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
           child: CircularProgressIndicator(color: AppTheme.primaryColor),
         ),
         error: (err, stack) => CustomErrorWidget(
-          message: 'Failed to load event details',
+          message: AppLocalizations.of(context)!.failedToLoadEventDetails,
           onRetry: () => ref.invalidate(activeEventProvider),
         ),
       ),
@@ -485,17 +528,16 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
     switch (_locationBanner) {
       case _LocationBannerState.disabledByUser:
-        text = 'Location tracking is off. Enable it in Settings.';
+        text = AppLocalizations.of(context)!.locationTrackingOffBanner;
         actionText = null;
         onAction = null;
       case _LocationBannerState.denied:
-        text = 'Location is off. Your contacts will not receive your location.';
+        text = AppLocalizations.of(context)!.locationDeniedBanner;
         actionText = null;
         onAction = null;
       case _LocationBannerState.backgroundLimited:
-        text =
-            'Background location is limited. Your contacts may not receive your latest location.';
-        actionText = 'Open settings';
+        text = AppLocalizations.of(context)!.locationLimitedBanner;
+        actionText = AppLocalizations.of(context)!.openSettings;
         onAction = () => openAppSettings();
       case _LocationBannerState.none:
         return const SizedBox.shrink();
@@ -503,7 +545,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
       padding: const EdgeInsets.all(12),
       color: AppTheme.darkSurface,
       child: Row(

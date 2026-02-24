@@ -24,8 +24,12 @@ class MainActivity: FlutterActivity() {
                     val eventName = call.argument<String>("eventName") ?: "Unknown"
                     val triggerAtMs = call.argument<Number>("triggerAtMs")?.toLong()
                     val expiryEpochMs = call.argument<Number>("expiryEpochMs")?.toLong()
+                    val notifChannelName = call.argument<String>("notifChannelName")
+                    val notifChannelDesc = call.argument<String>("notifChannelDesc")
+                    val notifTitle = call.argument<String>("notifTitle")
+                    val notifBody = call.argument<String>("notifBody")
                     if (eventId != null && triggerAtMs != null && expiryEpochMs != null) {
-                        scheduleAlarm(eventId, eventName, triggerAtMs, expiryEpochMs, result)
+                        scheduleAlarm(eventId, eventName, triggerAtMs, expiryEpochMs, notifChannelName, notifChannelDesc, notifTitle, notifBody, result)
                     } else {
                         result.error("INVALID_ARGS", "Missing eventId, triggerAtMs, or expiryEpochMs", null)
                     }
@@ -63,6 +67,9 @@ class MainActivity: FlutterActivity() {
                             if (baseUrl != null) {
                                 putExtra("baseUrl", baseUrl)
                             }
+                            putExtra("notifTitle", call.argument<String>("notifTitle"))
+                            putExtra("notifBody", call.argument<String>("notifBody"))
+                            putExtra("notifDesc", call.argument<String>("notifDesc"))
                         }
                         androidx.core.content.ContextCompat.startForegroundService(this, serviceIntent)
                         result.success(null)
@@ -86,7 +93,17 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun scheduleAlarm(eventId: String, eventName: String, triggerAtMs: Long, expiryEpochMs: Long, result: MethodChannel.Result) {
+    private fun scheduleAlarm(
+        eventId: String, 
+        eventName: String, 
+        triggerAtMs: Long, 
+        expiryEpochMs: Long, 
+        notifChannelName: String?, 
+        notifChannelDesc: String?, 
+        notifTitle: String?, 
+        notifBody: String?, 
+        result: MethodChannel.Result
+    ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -101,6 +118,10 @@ class MainActivity: FlutterActivity() {
             putExtra("eventId", eventId)
             putExtra("eventName", eventName)
             putExtra("expiryEpochMs", expiryEpochMs)
+            putExtra("notifChannelName", notifChannelName)
+            putExtra("notifChannelDesc", notifChannelDesc)
+            putExtra("notifTitle", notifTitle)
+            putExtra("notifBody", notifBody)
         }
         
         val requestCode = eventId.hashCode()
@@ -124,7 +145,11 @@ class MainActivity: FlutterActivity() {
                 eventId = eventId,
                 eventName = eventName,
                 triggerAtMs = triggerAtMs,
-                expiryEpochMs = expiryEpochMs
+                expiryEpochMs = expiryEpochMs,
+                notifChannelName = notifChannelName,
+                notifChannelDesc = notifChannelDesc,
+                notifTitle = notifTitle,
+                notifBody = notifBody
             ))
 
             result.success(true)

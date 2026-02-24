@@ -10,6 +10,8 @@ import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/home/presentation/widgets/app_drawer.dart';
 import 'package:sentinel/features/home/presentation/widgets/event_card.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
+import 'package:sentinel/features/settings/locale_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -39,7 +41,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       ref.invalidate(eventListProvider);
-      ref.read(locationTrackingManagerProvider).syncTrackingState();
+      final l10n = AppLocalizations.of(context)!;
+      ref
+          .read(locationTrackingManagerProvider)
+          .syncTrackingState(
+            notifTitle: l10n.notifTrackingTitle,
+            notifBody: l10n.notifTrackingBody,
+            notifDesc: l10n.notifTrackingDesc,
+          );
     }
   }
 
@@ -49,7 +58,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     if (!mounted) return;
     await _maybeShowLocationOnboarding();
     if (!mounted) return;
-    ref.read(locationTrackingManagerProvider).syncTrackingState();
+    final l10n = AppLocalizations.of(context)!;
+    ref
+        .read(locationTrackingManagerProvider)
+        .syncTrackingState(
+          notifTitle: l10n.notifTrackingTitle,
+          notifBody: l10n.notifTrackingBody,
+          notifDesc: l10n.notifTrackingDesc,
+        );
   }
 
   // --- Notification Onboarding (unchanged) ---
@@ -113,15 +129,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        title: const Text(
-          'Never Miss a Check-in',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.neverMissCheckIn,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
-          'Sentinel needs notification permissions to alert you before your '
-          'Sentinels expire. Without this, you won\'t receive the crucial '
-          '1hr, 15m, and 5m countdown alerts.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppLocalizations.of(context)!.notificationPrimer,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
@@ -134,7 +151,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text('Not Now', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              AppLocalizations.of(context)!.notNow,
+              style: const TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -148,9 +168,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text(
-              'Enable Notifications',
-              style: TextStyle(color: Colors.white),
+            child: Text(
+              AppLocalizations.of(context)!.enableNotifications,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ],
@@ -212,15 +232,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        title: const Text(
-          'Share your location with contacts',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.shareLocationTitle,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
-          'If you don\'t check in, Sentinel sends your last known '
-          'location to your emergency contacts so they can find you. '
-          'Location is only tracked while you have an active event.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppLocalizations.of(context)!.shareLocationBody,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
@@ -233,7 +254,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text('Not now', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              AppLocalizations.of(context)!.notNow,
+              style: const TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -247,9 +271,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text(
-              'Enable location',
-              style: TextStyle(color: Colors.white),
+            child: Text(
+              AppLocalizations.of(context)!.enableLocation,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ],
@@ -266,15 +290,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.darkSurface,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        title: const Text(
-          'Allow background location',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.allowBackgroundLocation,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        content: const Text(
-          'For your safety, allow location access "All the time" '
-          'on the next screen. This ensures tracking continues even '
-          'when your phone is locked.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppLocalizations.of(context)!.backgroundLocationBody,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
@@ -287,7 +312,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text('Skip', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              AppLocalizations.of(context)!.skip,
+              style: const TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -301,9 +329,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text(
-              'Continue',
-              style: TextStyle(color: Colors.white),
+            child: Text(
+              AppLocalizations.of(context)!.continueText,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ],
@@ -316,12 +344,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     final eventListAsync = ref.watch(eventListProvider);
 
+    // Sync tracking state when locale changes to update notification language
+    ref.listen(localeNotifierProvider, (prev, next) {
+      if (next != null) {
+        final l10n = AppLocalizations.of(context)!;
+        ref
+            .read(locationTrackingManagerProvider)
+            .syncTrackingState(
+              notifTitle: l10n.notifTrackingTitle,
+              notifBody: l10n.notifTrackingBody,
+              notifDesc: l10n.notifTrackingDesc,
+            );
+      }
+    });
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'SENTINEL',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.appTitle,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
             fontSize: 20,
@@ -339,9 +381,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 borderRadius: BorderRadius.zero,
               ),
             ),
-            child: const Text(
-              'HELP',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)!.helpTitle.toUpperCase(),
+              style: const TextStyle(
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
@@ -374,7 +416,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'NO EVENT CREATED YET',
+                      AppLocalizations.of(
+                        context,
+                      )!.noEventCreatedYet.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.3),
                         letterSpacing: 1.5,
@@ -419,9 +463,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   borderRadius: BorderRadius.zero,
                                 ),
                               ),
-                              child: const Text(
-                                'LOAD MORE',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.loadMore.toUpperCase(),
+                                style: const TextStyle(
                                   color: AppTheme.primaryColor,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 2.0,
@@ -455,7 +501,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             },
           ),
           error: (err, stack) => CustomErrorWidget(
-            message: 'Failed to load events',
+            message: AppLocalizations.of(context)!.failedToLoadEvents,
             onRetry: () => ref.read(eventListProvider.notifier).refresh(),
           ),
         ),

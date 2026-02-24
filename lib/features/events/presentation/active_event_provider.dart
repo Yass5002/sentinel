@@ -39,8 +39,6 @@ class ActiveEventNotifier extends StateNotifier<ActiveEventState> {
   ActiveEventNotifier(this._repository, this._eventId, this._ref)
     : super(const ActiveEventState(event: AsyncValue.loading())) {
     _fetchEvent();
-    // Ensure tracking is active when user enters event detail
-    _ref.read(locationTrackingManagerProvider).syncTrackingState();
   }
 
   Future<void> _fetchEvent() async {

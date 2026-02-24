@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SENTINEL</string>
+    <string name="countdown_title">SENTINEL 倒计时</string>
+    <string name="countdown_description">显示活动倒计时计时器</string>
+    <string name="emergency_alert_body">倒计时为零时将触发紧急警报。点击以签到。</string>
+    <string name="unknown_event">未知事件</string>
+    <string name="location_tracking_title">位置追踪</string>
+    <string name="location_tracking_body">SENTINEL 正在追踪您的位置</string>
+    <string name="location_tracking_description">显示 SENTINEL 何时正在追踪您的位置</string>
+</resources>

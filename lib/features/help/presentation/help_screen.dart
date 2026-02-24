@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
@@ -34,14 +35,18 @@ class HelpScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'HELP',
-          style: TextStyle(letterSpacing: 2.0, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.helpTitle.toUpperCase(),
+          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_sharp),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_sharp
+                : Icons.arrow_back_sharp,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -51,74 +56,83 @@ class HelpScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSection(
-              title: 'What is Sentinel?',
-              content:
-                  'Sentinel is a personal safety application designed to provide peace of mind in potentially unsafe situations. By setting a countdown timer, Sentinel ensures your trusted contacts are automatically notified with your vital details and last known location if you are unable to check in safely.',
+              title: AppLocalizations.of(context)!.helpQ1,
+              content: AppLocalizations.of(context)!.helpA1,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Home Screen',
-              content:
-                  'The home screen displays a list of all your Sentinels. You can view your active, completed, and cancelled Sentinels in one place.',
+              title: AppLocalizations.of(context)!.helpQ2,
+              content: AppLocalizations.of(context)!.helpA2,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Creating a Sentinel',
-              content:
-                  'Tap the plus button on the home screen to create a new Sentinel. Give it a name, enter a message, upload any important files, and choose the contacts you want to notify. Finally, set a countdown timer or a specific target time for the Sentinel to expire.',
+              title: AppLocalizations.of(context)!.helpQ3,
+              content: AppLocalizations.of(context)!.helpA3,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Checking In',
-              content:
-                  'When a Sentinel is active, a countdown timer is displayed. To let your contacts know you are safe, tap the large "I AM SAFE" button before the timer runs out. This will end the Sentinel without sending any alerts.',
+              title: AppLocalizations.of(context)!.helpQ4,
+              content: AppLocalizations.of(context)!.helpA4,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Cancelling a Sentinel',
-              content:
-                  'If you no longer need an active Sentinel, tap "CANCEL EVENT". This will immediately stop the timer and your location tracking. No alerts will be sent to your contacts.',
+              title: AppLocalizations.of(context)!.helpQ5,
+              content: AppLocalizations.of(context)!.helpA5,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'When a Sentinel Expires',
-              content:
-                  'If the timer reaches zero and you have not checked in, your Sentinel will expire automatically. Emergency alerts containing your message, attached files, and your last known location will be sent to your selected contacts.',
+              title: AppLocalizations.of(context)!.helpQ6,
+              content: AppLocalizations.of(context)!.helpA6,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Managing Contacts',
-              content:
-                  'Access your contacts from the main menu. You can add people by their email address, edit their details, or swipe left on a contact to remove them from your list.',
+              title: AppLocalizations.of(context)!.helpQ7,
+              content: AppLocalizations.of(context)!.helpA7,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Your Profile',
-              content:
-                  'Tap your name in the main menu to view your profile. You can change your display name here, which is the name your contacts will see when they receive an alert.',
+              title: AppLocalizations.of(context)!.helpQ8,
+              content: AppLocalizations.of(context)!.helpA8,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Settings and Permissions',
-              content:
-                  'Visit the Settings screen to manage your app preferences. You can turn check-in reminders on or off, and manage your location tracking settings. Check-in reminders will notify you 1 hour, 15 minutes, and 5 minutes before a Sentinel is about to expire.',
+              title: AppLocalizations.of(context)!.helpQ9,
+              content: AppLocalizations.of(context)!.helpA9,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Deleting Event History',
-              content:
-                  'To remove a past Sentinel from your history, open the past Sentinel from the home screen and tap the delete icon in the top corner.',
+              title: AppLocalizations.of(context)!.helpQ10,
+              content: AppLocalizations.of(context)!.helpA10,
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: 'Deleting Your Account',
-              content:
-                  'If you wish to permanently delete your account and all your data, you can do so in the Settings screen.',
+              title: AppLocalizations.of(context)!.helpQ11,
+              content: AppLocalizations.of(context)!.helpA11,
+            ),
+            const SizedBox(height: 24),
+            _buildSection(
+              title: AppLocalizations.of(context)!.helpQ12,
+              content: AppLocalizations.of(context)!.helpA12,
+            ),
+            const SizedBox(height: 24),
+            _buildSection(
+              title: AppLocalizations.of(context)!.helpQ13,
+              content: AppLocalizations.of(context)!.helpA13,
+            ),
+            const SizedBox(height: 24),
+            _buildSection(
+              title: AppLocalizations.of(context)!.helpQ14,
+              content: AppLocalizations.of(context)!.helpA14,
+            ),
+            const SizedBox(height: 24),
+            _buildSection(
+              title: AppLocalizations.of(context)!.helpQ15,
+              content: AppLocalizations.of(context)!.helpA15,
             ),
             const SizedBox(height: 32),
-            const Text(
-              'Contact Support',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.contactSupport,
+              style: const TextStyle(
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -127,9 +141,9 @@ class HelpScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Wrap(
               children: [
-                const Text(
-                  'For further assistance, reach out to us at ',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.contactSupportText,
+                  style: const TextStyle(
                     color: Colors.white,
                     height: 1.5,
                     fontSize: 15,

@@ -21,7 +21,11 @@ object AlarmStore {
         val eventId: String,
         val eventName: String,
         val triggerAtMs: Long,
-        val expiryEpochMs: Long
+        val expiryEpochMs: Long,
+        val notifChannelName: String? = null,
+        val notifChannelDesc: String? = null,
+        val notifTitle: String? = null,
+        val notifBody: String? = null
     )
 
     fun save(context: Context, data: AlarmData) {
@@ -33,6 +37,10 @@ object AlarmStore {
             put("eventName", data.eventName)
             put("triggerAtMs", data.triggerAtMs)
             put("expiryEpochMs", data.expiryEpochMs)
+            put("notifChannelName", data.notifChannelName)
+            put("notifChannelDesc", data.notifChannelDesc)
+            put("notifTitle", data.notifTitle)
+            put("notifBody", data.notifBody)
         }
         map.put(data.eventId, entry)
 
@@ -62,7 +70,11 @@ object AlarmStore {
                     eventId = eventId,
                     eventName = entry.getString("eventName"),
                     triggerAtMs = entry.getLong("triggerAtMs"),
-                    expiryEpochMs = entry.getLong("expiryEpochMs")
+                    expiryEpochMs = entry.getLong("expiryEpochMs"),
+                    notifChannelName = entry.optString("notifChannelName", null),
+                    notifChannelDesc = entry.optString("notifChannelDesc", null),
+                    notifTitle = entry.optString("notifTitle", null),
+                    notifBody = entry.optString("notifBody", null)
                 )
             )
         }

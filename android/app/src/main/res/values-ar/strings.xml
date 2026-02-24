@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SENTINEL</string>
+    <string name="countdown_title">العد التنازلي لـ SENTINEL</string>
+    <string name="countdown_description">يعرض مؤقت العد التنازلي النشط</string>
+    <string name="emergency_alert_body">سيتم تشغيل تنبيهات الطوارئ عندما يصل المؤقت إلى الصفر. انقر لتسجيل الوصول.</string>
+    <string name="unknown_event">حدث غير معروف</string>
+    <string name="location_tracking_title">تتبع الموقع</string>
+    <string name="location_tracking_body">يقوم SENTINEL بتتبع موقعك</string>
+    <string name="location_tracking_description">يظهر عندما يقوم SENTINEL بتتبع موقعك</string>
+</resources>

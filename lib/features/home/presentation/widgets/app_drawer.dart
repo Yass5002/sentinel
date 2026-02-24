@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class AppDrawer extends ConsumerStatefulWidget {
   const AppDrawer({super.key});
@@ -72,7 +73,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    user?.name ?? 'Loading...',
+                    user?.name ?? AppLocalizations.of(context)!.loading,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -97,13 +98,13 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
               children: [
                 _buildDrawerItem(
                   icon: Icons.home_sharp,
-                  label: 'HOME',
+                  label: AppLocalizations.of(context)!.home.toUpperCase(),
                   isActive: true,
                   onTap: () => context.pop(),
                 ),
                 _buildDrawerItem(
                   icon: Icons.people_sharp,
-                  label: 'CONTACTS',
+                  label: AppLocalizations.of(context)!.contacts.toUpperCase(),
                   isActive: false,
                   onTap: () {
                     context.pop();
@@ -112,7 +113,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                 ),
                 _buildDrawerItem(
                   icon: Icons.settings_sharp,
-                  label: 'SETTINGS',
+                  label: AppLocalizations.of(context)!.settings.toUpperCase(),
                   isActive: false,
                   onTap: () {
                     context.pop();
@@ -148,8 +149,8 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
     return Container(
       decoration: isActive
           ? const BoxDecoration(
-              border: Border(
-                left: BorderSide(color: AppTheme.primaryColor, width: 4),
+              border: BorderDirectional(
+                start: BorderSide(color: AppTheme.primaryColor, width: 4),
               ),
               color: AppTheme.darkSurface,
             )

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SENTINEL</string>
+    <string name="countdown_title">Cuenta regresiva SENTINEL</string>
+    <string name="countdown_description">Muestra el temporizador de cuenta regresiva activo</string>
+    <string name="emergency_alert_body">Las alertas de emergencia se activarán cuando el temporizador llegue a cero. Toque para hacer check-in.</string>
+    <string name="unknown_event">Evento desconocido</string>
+    <string name="location_tracking_title">Seguimiento de ubicación</string>
+    <string name="location_tracking_body">SENTINEL está rastreando tu ubicación</string>
+    <string name="location_tracking_description">Muestra cuándo SENTINEL está rastreando tu ubicación</string>
+</resources>

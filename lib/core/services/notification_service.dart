@@ -72,6 +72,12 @@ class NotificationService {
     required String eventName,
     required DateTime expiresAt,
     required Duration timeDelta,
+    required String title,
+    required String alertTitle,
+    required String hourBody,
+    required String fifteenMinBody,
+    required String fiveMinBody,
+    required String firedBody,
   }) async {
     if (!_initialized) await init();
 
@@ -104,8 +110,8 @@ class NotificationService {
         time: oneHourBefore,
         mode: scheduleMode,
         details: notificationDetails,
-        title: 'Sentinel',
-        body: "Your Sentinel '$eventName' expires in 1 hour",
+        title: title,
+        body: hourBody,
         payload: eventId,
       );
     }
@@ -120,8 +126,8 @@ class NotificationService {
         time: fifteenMinBefore,
         mode: scheduleMode,
         details: notificationDetails,
-        title: 'Sentinel',
-        body: "Your Sentinel '$eventName' expires in 15 minutes",
+        title: title,
+        body: fifteenMinBody,
         payload: eventId,
       );
     }
@@ -136,8 +142,8 @@ class NotificationService {
         time: fiveMinBefore,
         mode: scheduleMode,
         details: notificationDetails,
-        title: 'Sentinel',
-        body: "Your Sentinel '$eventName' expires in 5 minutes. Check in now.",
+        title: title,
+        body: fiveMinBody,
         payload: eventId,
       );
     }
@@ -149,9 +155,8 @@ class NotificationService {
         time: adjustedExpiresAt,
         mode: scheduleMode,
         details: notificationDetails,
-        title: 'Sentinel Alert',
-        body:
-            "Sentinel '$eventName' has fired. Emergency contacts have been notified.",
+        title: alertTitle,
+        body: firedBody,
         payload: eventId,
       );
     }

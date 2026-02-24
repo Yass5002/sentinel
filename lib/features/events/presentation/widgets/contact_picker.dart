@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/features/contacts/presentation/contacts_provider.dart';
+import 'package:sentinel/l10n/app_localizations.dart';
 
 class ContactPicker extends StatelessWidget {
   final List<Map<String, String>> selectedContacts;
@@ -83,18 +84,18 @@ class ContactPicker extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border.all(color: AppTheme.primaryColor),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.add_sharp,
                         size: 16,
                         color: AppTheme.primaryColor,
                       ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
-                        'ADD CONTACT',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.addContact,
+                        style: const TextStyle(
                           color: AppTheme.primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
@@ -164,11 +165,11 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(24, 24, 24, 16),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 16),
             child: Text(
-              'Select Contacts',
-              style: TextStyle(
+              AppLocalizations.of(context)!.selectContacts,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -182,16 +183,18 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'SAVED CONTACTS',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.savedContacts,
+                    style: const TextStyle(
                       color: Color(0xFF666666),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
                   ),
                   Text(
-                    '${_checkedEmails.length}/10 selected',
+                    AppLocalizations.of(
+                      context,
+                    )!.contactsSelected(_checkedEmails.length),
                     style: TextStyle(
                       color: _checkedEmails.length > 10
                           ? AppTheme.errorColor
@@ -214,11 +217,11 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
                 child: TextField(
                   onChanged: (val) => setState(() => _searchQuery = val),
                   style: const TextStyle(color: Colors.white, fontSize: 14),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Search contacts...',
-                    hintStyle: TextStyle(color: Color(0xFF666666)),
-                    icon: Icon(
+                    hintText: AppLocalizations.of(context)!.searchContacts,
+                    hintStyle: const TextStyle(color: Color(0xFF666666)),
+                    icon: const Icon(
                       Icons.search_sharp,
                       color: Color(0xFF666666),
                       size: 18,
@@ -284,9 +287,9 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (savedContacts.isNotEmpty) ...[
-                  const Text(
-                    'OR ENTER MANUALLY',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.orEnterManually,
+                    style: const TextStyle(
                       color: Color(0xFF666666),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -294,9 +297,9 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
                   ),
                   const SizedBox(height: 8),
                 ] else ...[
-                  const Text(
-                    'ENTER CONTACT MANUALLY',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.enterContactManually,
+                    style: const TextStyle(
                       color: Color(0xFF666666),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -313,10 +316,10 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'email@example.com',
-                      hintStyle: TextStyle(color: Color(0xFF666666)),
+                      hintText: AppLocalizations.of(context)!.emailExample,
+                      hintStyle: const TextStyle(color: Color(0xFF666666)),
                     ),
                   ),
                 ),
@@ -329,10 +332,12 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
                   child: TextField(
                     controller: _nameController,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Contact name (Optional)',
-                      hintStyle: TextStyle(color: Color(0xFF666666)),
+                      hintText: AppLocalizations.of(
+                        context,
+                      )!.contactNameOptional,
+                      hintStyle: const TextStyle(color: Color(0xFF666666)),
                     ),
                   ),
                 ),
@@ -384,7 +389,9 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
                           r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
                         ).hasMatch(manualEmail)) {
                           setState(
-                            () => _localError = 'Enter a valid email address',
+                            () => _localError = AppLocalizations.of(
+                              context,
+                            )!.emailInvalid,
                           );
                           return;
                         }
@@ -413,14 +420,17 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
 
                       if (finalContacts.isEmpty) {
                         setState(
-                          () => _localError =
-                              'Please select or add at least one contact',
+                          () => _localError = AppLocalizations.of(
+                            context,
+                          )!.selectAtLeastOneContact,
                         );
                         return;
                       }
                       if (finalContacts.length > 10) {
                         setState(
-                          () => _localError = 'Maximum of 10 contacts allowed',
+                          () => _localError = AppLocalizations.of(
+                            context,
+                          )!.maxContactsAllowed,
                         );
                         return;
                       }
@@ -434,9 +444,9 @@ class _AddContactSheetState extends ConsumerState<_AddContactSheet> {
                         borderRadius: BorderRadius.zero,
                       ),
                     ),
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.save,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
