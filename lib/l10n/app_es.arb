@@ -209,5 +209,13 @@
   "noSavedContacts": "No hay contactos guardados",
   "deleteContactTitle": "Eliminar contacto",
   "deleteContactConfirm": "se eliminará de sus contactos guardados.",
-  "failedToLoadContacts": "Error al cargar los contactos"
+  "failedToLoadContacts": "Error al cargar los contactos",
+  "contactEmailLabel": "EMAIL",
+  "contactNameLabel": "NOMBRE (OPCIONAL)",
+  "contactAlreadyExists": "Ya existe un contacto con este correo electrónico",
+  "unableToLoadProfile": "No se puede cargar el perfil",
+  "setYourName": "Establezca su nombre",
+  "nameVisibleToContacts": "Este es el nombre que sus contactos ven en los correos de alerta",
+  "failedToLoadProfile": "Error al cargar el perfil",
+  "nameRequired": "El nombre es obligatorio"
 }

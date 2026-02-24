@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/profile/presentation/profile_provider.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
@@ -19,7 +20,7 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.profile,
-          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
+          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
@@ -35,7 +36,7 @@ class ProfileScreen extends ConsumerWidget {
         data: (user) {
           if (user == null) {
             return CustomErrorWidget(
-              message: 'Unable to load profile',
+              message: AppLocalizations.of(context)!.unableToLoadProfile,
               onRetry: () => ref.invalidate(profileNotifierProvider),
             );
           }
@@ -76,7 +77,7 @@ class ProfileScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      user.name.isNotEmpty ? user.name : 'Set your name',
+                      user.name.isNotEmpty ? user.name : AppLocalizations.of(context)!.setYourName,
                       style: TextStyle(
                         color: user.name.isNotEmpty
                             ? Colors.white
@@ -98,10 +99,10 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 8),
 
               // Subtitle
-              const Center(
+              Center(
                 child: Text(
-                  'This is the name your contacts see in alert emails',
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
+                  AppLocalizations.of(context)!.nameVisibleToContacts,
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -128,7 +129,7 @@ class ProfileScreen extends ConsumerWidget {
           child: CircularProgressIndicator(color: AppTheme.primaryColor),
         ),
         error: (err, _) => CustomErrorWidget(
-          message: 'Failed to load profile',
+          message: AppLocalizations.of(context)!.failedToLoadProfile,
           onRetry: () => ref.invalidate(profileNotifierProvider),
         ),
       ),
@@ -212,7 +213,7 @@ class _EditNameSheetState extends State<_EditNameSheet> {
   Future<void> _save() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      setState(() => _error = 'Name is required');
+      setState(() => _error = AppLocalizations.of(context)!.nameRequired);
       return;
     }
 

@@ -581,4 +581,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get failedToLoadContacts => 'فشل تحميل جهات الاتصال';
+
+  @override
+  String get contactEmailLabel => 'البريد الإلكتروني';
+
+  @override
+  String get contactNameLabel => 'الاسم (اختياري)';
+
+  @override
+  String get contactAlreadyExists =>
+      'يوجد بالفعل جهة اتصال بهذا البريد الإلكتروني';
+
+  @override
+  String get unableToLoadProfile => 'تعذر تحميل الملف الشخصي';
+
+  @override
+  String get setYourName => 'حدد اسمك';
+
+  @override
+  String get nameVisibleToContacts =>
+      'هذا هو الاسم الذي تراه جهات الاتصال الخاصة بك في رسائل التنبيه الإلكترونية';
+
+  @override
+  String get failedToLoadProfile => 'فشل تحميل الملف الشخصي';
+
+  @override
+  String get nameRequired => 'الاسم مطلوب';
 }

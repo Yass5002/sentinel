@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/core/services/notification_service.dart';
 import 'package:sentinel/core/services/native_timer_service.dart';
 import 'package:sentinel/core/services/native_location_service.dart';
@@ -307,7 +308,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.settings,
-          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
+          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(

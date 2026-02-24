@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 
 class HelpScreen extends StatelessWidget {
@@ -37,7 +38,7 @@ class HelpScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.helpTitle.toUpperCase(),
-          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
+          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,

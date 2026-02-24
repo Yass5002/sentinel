@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/presentation/event_detail_provider.dart';
@@ -126,11 +127,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     Expanded(
                       child: Text(
                         event.name.toUpperCase(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1.2,
+                          letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.2),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -407,7 +408,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                             fontFamily: FontUtils.getCourierFont(context),
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
+                            letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
                           ),
                         ),
                       ),
@@ -458,11 +459,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             children: [
               Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 3.0,
+                  letterSpacing: TextStyleHelper.getLetterSpacing(context, 3.0),
                 ),
               ),
               const SizedBox(height: 12),
@@ -473,7 +474,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                   fontFamily: FontUtils.getCourierFont(context),
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
+                  letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
                 ),
               ),
             ],
@@ -492,7 +493,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           color: Colors.white.withValues(alpha: 0.5),
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          letterSpacing: 1.5,
+          letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
         ),
       ),
     );

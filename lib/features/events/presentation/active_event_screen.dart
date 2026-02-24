@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/theme/font_utils.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
@@ -230,27 +231,30 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
               Expanded(
                 flex: 4,
                 child: Center(
-                  child: Text(
-                    event.fired
-                        ? AppLocalizations.of(context)!.alertsSent
-                        : (event.terminated
-                              ? AppLocalizations.of(context)!.cancelled
-                              : (_isExpired
-                                    ? AppLocalizations.of(context)!.alertsSent
-                                    : _formatDuration(_remaining))),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: FontUtils.getCourierFont(
-                        context,
-                      ), // Monospace with fallback
-                      fontSize: (event.fired || _isExpired)
-                          ? 40
-                          : 56, // Adjust for longer text
-                      fontWeight: FontWeight.w900, // ExtraBold
-                      color: (event.fired || _isExpired)
-                          ? AppTheme.errorColor
-                          : (event.terminated ? Colors.grey : _getTimerColor()),
-                      letterSpacing: 4.0,
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text(
+                      event.fired
+                          ? AppLocalizations.of(context)!.alertsSent
+                          : (event.terminated
+                                ? AppLocalizations.of(context)!.cancelled
+                                : (_isExpired
+                                      ? AppLocalizations.of(context)!.alertsSent
+                                      : _formatDuration(_remaining))),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: FontUtils.getCourierFont(
+                          context,
+                        ), // Monospace with fallback
+                        fontSize: (event.fired || _isExpired)
+                            ? 40
+                            : 56, // Adjust for longer text
+                        fontWeight: FontWeight.w900, // ExtraBold
+                        color: (event.fired || _isExpired)
+                            ? AppTheme.errorColor
+                            : (event.terminated ? Colors.grey : _getTimerColor()),
+                        letterSpacing: TextStyleHelper.getLetterSpacing(context, 4.0),
+                      ),
                     ),
                   ),
                 ),
@@ -265,7 +269,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                     color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
+                    letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                   ),
                 ),
               ),
@@ -322,7 +326,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                     color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
+                    letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                   ),
                 ),
               ),
@@ -419,9 +423,9 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                         onPressed: _handleCancel,
                         child: Text(
                           AppLocalizations.of(context)!.cancelEvent,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white54,
-                            letterSpacing: 1.5,
+                            letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -460,12 +464,12 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
                                     ? AppLocalizations.of(context)!.returnToHome
                                     : AppLocalizations.of(context)!.iAmSafe,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color:
                                       Colors.black, // High contrast on Orange
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.5,
+                                  letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                                 ),
                               ),
                       ),
@@ -612,7 +616,7 @@ class _ActiveEventScreenState extends ConsumerState<ActiveEventScreen> {
               color: statusColor,
               fontWeight: FontWeight.bold,
               fontSize: 12,
-              letterSpacing: 1.0,
+              letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
             ),
           ),
         ],

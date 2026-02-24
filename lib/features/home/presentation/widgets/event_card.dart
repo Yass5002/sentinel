@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/core/time/time_sync_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/domain/event_model.dart';
@@ -117,23 +118,26 @@ class _EventCardState extends ConsumerState<EventCard> {
                                   ), // Much dimmer for inactive
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            letterSpacing: 1.0,
+                            letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
                           ),
                         ),
                         const SizedBox(height: 8),
 
                         // Timer or Status
                         if (_isActive)
-                          Text(
-                            _formatDuration(_remaining),
-                            style: TextStyle(
-                              fontFamily: FontUtils.getCourierFont(context),
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: _remaining.inMinutes < 10
-                                  ? Colors.red
-                                  : Colors.white,
-                              letterSpacing: 2.0,
+                          Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text(
+                              _formatDuration(_remaining),
+                              style: TextStyle(
+                                fontFamily: FontUtils.getCourierFont(context),
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: _remaining.inMinutes < 10
+                                    ? Colors.red
+                                    : Colors.white,
+                                letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
+                              ),
                             ),
                           )
                         else

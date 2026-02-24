@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/features/settings/locale_provider.dart';
 import 'package:flag/flag.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
@@ -91,11 +92,11 @@ class _LanguageSelectionScreenState
                   fit: BoxFit.scaleDown,
                   child: Text(
                     AppLocalizations.of(context)!.appTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'SentinelBrand',
                       fontSize: 48,
                       color: AppTheme.primaryColor,
-                      letterSpacing: 4.0,
+                      letterSpacing: TextStyleHelper.getLetterSpacing(context, 4.0),
                     ),
                   ),
                 ),
@@ -195,10 +196,10 @@ class _LanguageSelectionScreenState
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.continueText.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
+                    letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                   ),
                 ),
               ),

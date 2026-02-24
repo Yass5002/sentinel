@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 
@@ -167,7 +168,7 @@ class _AppDrawerState extends ConsumerState<AppDrawer> {
                 ? Colors.white
                 : Colors.white.withValues(alpha: 0.5),
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-            letterSpacing: 1.0,
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
           ),
         ),
         onTap: onTap,

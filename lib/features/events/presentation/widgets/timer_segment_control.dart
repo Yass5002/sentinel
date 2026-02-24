@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 
 class TimerSegmentControl extends StatefulWidget {
@@ -98,7 +99,7 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
                 ? Colors.white
                 : Colors.white.withValues(alpha: 0.5),
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.0,
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
           ),
         ),
       ),
@@ -106,44 +107,47 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
   }
 
   Widget _buildDurationInputs() {
-    return Row(
-      children: [
-        _buildTimeBox(
-          _hoursController,
-          'HH',
-          (v) => widget.onDurationChanged(v, null, null),
-        ),
-        const SizedBox(width: 8),
-        const Text(
-          ':',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Row(
+        children: [
+          _buildTimeBox(
+            _hoursController,
+            'HH',
+            (v) => widget.onDurationChanged(v, null, null),
           ),
-        ),
-        const SizedBox(width: 8),
-        _buildTimeBox(
-          _minutesController,
-          'MM',
-          (v) => widget.onDurationChanged(null, v, null),
-        ),
-        const SizedBox(width: 8),
-        const Text(
-          ':',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+          const SizedBox(width: 8),
+          const Text(
+            ':',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        _buildTimeBox(
-          _secondsController,
-          'SS',
-          (v) => widget.onDurationChanged(null, null, v),
-        ),
-      ],
+          const SizedBox(width: 8),
+          _buildTimeBox(
+            _minutesController,
+            'MM',
+            (v) => widget.onDurationChanged(null, v, null),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            ':',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _buildTimeBox(
+            _secondsController,
+            'SS',
+            (v) => widget.onDurationChanged(null, null, v),
+          ),
+        ],
+      ),
     );
   }
 
@@ -198,50 +202,53 @@ class _TimerSegmentControlState extends State<TimerSegmentControl> {
     final timeStr =
         "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
 
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: InkWell(
-            onTap: () => _pickDate(context),
-            child: Container(
-              height: 64,
-              color: AppTheme.darkSurface,
-              alignment: Alignment.center,
-              child: Text(
-                dateStr,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Courier',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: InkWell(
+              onTap: () => _pickDate(context),
+              child: Container(
+                height: 64,
+                color: AppTheme.darkSurface,
+                alignment: Alignment.center,
+                child: Text(
+                  dateStr,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Courier',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          flex: 2,
-          child: InkWell(
-            onTap: () => _pickTime(context),
-            child: Container(
-              height: 64,
-              color: AppTheme.darkSurface,
-              alignment: Alignment.center,
-              child: Text(
-                timeStr,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Courier',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+          const SizedBox(width: 8),
+          Expanded(
+            flex: 2,
+            child: InkWell(
+              onTap: () => _pickTime(context),
+              child: Container(
+                height: 64,
+                color: AppTheme.darkSurface,
+                alignment: Alignment.center,
+                child: Text(
+                  timeStr,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Courier',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -207,5 +207,13 @@
   "noSavedContacts": "No saved contacts",
   "deleteContactTitle": "Delete contact",
   "deleteContactConfirm": "will be removed from your saved contacts.",
-  "failedToLoadContacts": "Failed to load contacts"
+  "failedToLoadContacts": "Failed to load contacts",
+  "contactEmailLabel": "EMAIL",
+  "contactNameLabel": "NAME (OPTIONAL)",
+  "contactAlreadyExists": "A contact with this email already exists",
+  "unableToLoadProfile": "Unable to load profile",
+  "setYourName": "Set your name",
+  "nameVisibleToContacts": "This is the name your contacts see in alert emails",
+  "failedToLoadProfile": "Failed to load profile",
+  "nameRequired": "Name is required"
 }

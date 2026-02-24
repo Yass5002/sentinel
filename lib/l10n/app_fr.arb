@@ -209,5 +209,13 @@
   "noSavedContacts": "Aucun contact enregistré",
   "deleteContactTitle": "Supprimer le contact",
   "deleteContactConfirm": "sera supprimé de vos contacts enregistrés.",
-  "failedToLoadContacts": "Échec du chargement des contacts"
+  "failedToLoadContacts": "Échec du chargement des contacts",
+  "contactEmailLabel": "EMAIL",
+  "contactNameLabel": "NOM (OPTIONNEL)",
+  "contactAlreadyExists": "Un contact avec cet email existe déjà",
+  "unableToLoadProfile": "Impossible de charger le profil",
+  "setYourName": "Définissez votre nom",
+  "nameVisibleToContacts": "C'est le nom que vos contacts voient dans les emails d'alerte",
+  "failedToLoadProfile": "Échec du chargement du profil",
+  "nameRequired": "Le nom est requis"
 }

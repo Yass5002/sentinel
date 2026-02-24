@@ -209,5 +209,13 @@
   "noSavedContacts": "没有保存的联系人",
   "deleteContactTitle": "删除联系人",
   "deleteContactConfirm": "将从您保存的联系人中移除。",
-  "failedToLoadContacts": "加载联系人失败"
+  "failedToLoadContacts": "加载联系人失败",
+  "contactEmailLabel": "电子邮件",
+  "contactNameLabel": "姓名（可选）",
+  "contactAlreadyExists": "具有此电子邮件的联系人已存在",
+  "unableToLoadProfile": "无法加载个人资料",
+  "setYourName": "设置您的姓名",
+  "nameVisibleToContacts": "这是您的联系人在警报电子邮件中看到的姓名",
+  "failedToLoadProfile": "加载个人资料失败",
+  "nameRequired": "姓名为必填项"
 }

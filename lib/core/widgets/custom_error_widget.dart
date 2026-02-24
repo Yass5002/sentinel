@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
 import 'package:sentinel/core/theme/font_utils.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 
 class CustomErrorWidget extends StatelessWidget {
@@ -34,7 +35,7 @@ class CustomErrorWidget extends StatelessWidget {
                 fontFamily: FontUtils.getCourierFont(context),
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                letterSpacing: 1.5,
+                letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
               ),
               textAlign: TextAlign.center,
             ),
@@ -65,9 +66,9 @@ class CustomErrorWidget extends StatelessWidget {
               ),
               child: Text(
                 l10n.retry.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 2.0,
+                  letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
                 ),
               ),
             ),

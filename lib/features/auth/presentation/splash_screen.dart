@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/storage/secure_storage_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/features/auth/presentation/auth_notifier.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 
@@ -55,11 +56,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             fit: BoxFit.scaleDown,
             child: Text(
               AppLocalizations.of(context)!.appTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'SentinelBrand',
                 fontSize: 64,
                 color: AppTheme.primaryColor,
-                letterSpacing: 4.0,
+                letterSpacing: TextStyleHelper.getLetterSpacing(context, 4.0),
               ),
             ),
           ),

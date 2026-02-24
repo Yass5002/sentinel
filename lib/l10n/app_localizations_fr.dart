@@ -582,4 +582,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get failedToLoadContacts => 'Échec du chargement des contacts';
+
+  @override
+  String get contactEmailLabel => 'EMAIL';
+
+  @override
+  String get contactNameLabel => 'NOM (OPTIONNEL)';
+
+  @override
+  String get contactAlreadyExists => 'Un contact avec cet email existe déjà';
+
+  @override
+  String get unableToLoadProfile => 'Impossible de charger le profil';
+
+  @override
+  String get setYourName => 'Définissez votre nom';
+
+  @override
+  String get nameVisibleToContacts =>
+      'C\'est le nom que vos contacts voient dans les emails d\'alerte';
+
+  @override
+  String get failedToLoadProfile => 'Échec du chargement du profil';
+
+  @override
+  String get nameRequired => 'Le nom est requis';
 }

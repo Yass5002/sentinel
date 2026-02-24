@@ -553,4 +553,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get failedToLoadContacts => '加载联系人失败';
+
+  @override
+  String get contactEmailLabel => '电子邮件';
+
+  @override
+  String get contactNameLabel => '姓名（可选）';
+
+  @override
+  String get contactAlreadyExists => '具有此电子邮件的联系人已存在';
+
+  @override
+  String get unableToLoadProfile => '无法加载个人资料';
+
+  @override
+  String get setYourName => '设置您的姓名';
+
+  @override
+  String get nameVisibleToContacts => '这是您的联系人在警报电子邮件中看到的姓名';
+
+  @override
+  String get failedToLoadProfile => '加载个人资料失败';
+
+  @override
+  String get nameRequired => '姓名为必填项';
 }

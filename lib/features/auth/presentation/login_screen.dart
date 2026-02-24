@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/features/auth/data/auth_repository.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 
@@ -74,11 +75,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       AppLocalizations.of(context)!.sentinelBrand,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'SentinelBrand',
                         fontSize: 56,
                         color: AppTheme.primaryColor,
-                        letterSpacing: 2.0,
+                        letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
                       ),
                     ),
                   ),

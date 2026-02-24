@@ -1135,6 +1135,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load contacts'**
   String get failedToLoadContacts;
+
+  /// No description provided for @contactEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EMAIL'**
+  String get contactEmailLabel;
+
+  /// No description provided for @contactNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NAME (OPTIONAL)'**
+  String get contactNameLabel;
+
+  /// No description provided for @contactAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A contact with this email already exists'**
+  String get contactAlreadyExists;
+
+  /// No description provided for @unableToLoadProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load profile'**
+  String get unableToLoadProfile;
+
+  /// No description provided for @setYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your name'**
+  String get setYourName;
+
+  /// No description provided for @nameVisibleToContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the name your contacts see in alert emails'**
+  String get nameVisibleToContacts;
+
+  /// No description provided for @failedToLoadProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load profile'**
+  String get failedToLoadProfile;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequired;
 }
 
 class _AppLocalizationsDelegate

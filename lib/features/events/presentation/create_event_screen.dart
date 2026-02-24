@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/features/events/presentation/create_event_provider.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
 import 'package:sentinel/features/events/presentation/widgets/contact_picker.dart';
@@ -127,7 +128,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.newSentinel,
-          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
+          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
@@ -316,11 +317,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                             )
                           : Text(
                               AppLocalizations.of(context)!.initiateSentinel,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 1.5,
+                                letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                               ),
                             ),
                     ),

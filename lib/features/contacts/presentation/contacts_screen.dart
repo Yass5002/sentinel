@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/l10n/app_localizations.dart';
 import 'package:sentinel/features/contacts/domain/contact_model.dart';
@@ -20,7 +21,7 @@ class ContactsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.contacts.toUpperCase(),
-          style: const TextStyle(letterSpacing: 2.0, fontSize: 16),
+          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
@@ -358,7 +359,7 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
         _isSaving = false;
         if (error.toLowerCase().contains('duplicate') ||
             error.toLowerCase().contains('already exists')) {
-          _emailError = 'A contact with this email already exists';
+          _emailError = AppLocalizations.of(context)!.contactAlreadyExists;
         } else {
           _globalError = error;
         }
@@ -417,9 +418,9 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
           ],
 
           // Email
-          const Text(
-            'EMAIL',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.contactEmailLabel,
+            style: const TextStyle(
               color: AppTheme.primaryColor,
               fontWeight: FontWeight.bold,
               fontSize: 12,
@@ -455,9 +456,9 @@ class _ContactBottomSheetState extends State<_ContactBottomSheet> {
           const SizedBox(height: 16),
 
           // Name
-          const Text(
-            'NAME (OPTIONAL)',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.contactNameLabel,
+            style: const TextStyle(
               color: AppTheme.primaryColor,
               fontWeight: FontWeight.bold,
               fontSize: 12,

@@ -197,14 +197,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                         child: child,
                       );
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(6, (index) {
-                        // Add gap after 3rd digit
-                        return Row(
-                          children: [
-                            if (index == 3) const SizedBox(width: 16),
-                            SizedBox(
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(6, (index) {
+                          // Add gap after 3rd digit
+                          return Row(
+                            children: [
+                              if (index == 3) const SizedBox(width: 16),
+                              SizedBox(
                               width: 44, // Adjust width to fit 6 + gap
                               height: 56,
                               child: TextFormField(
@@ -254,6 +256,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                           ],
                         );
                       }),
+                      ),
                     ),
                   ),
 

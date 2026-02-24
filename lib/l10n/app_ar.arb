@@ -209,5 +209,13 @@
   "noSavedContacts": "لا توجد جهات اتصال محفوظة",
   "deleteContactTitle": "حذف جهة الاتصال",
   "deleteContactConfirm": "سيتم إزالتها من جهات الاتصال المحفوظة لديك.",
-  "failedToLoadContacts": "فشل تحميل جهات الاتصال"
+  "failedToLoadContacts": "فشل تحميل جهات الاتصال",
+  "contactEmailLabel": "البريد الإلكتروني",
+  "contactNameLabel": "الاسم (اختياري)",
+  "contactAlreadyExists": "يوجد بالفعل جهة اتصال بهذا البريد الإلكتروني",
+  "unableToLoadProfile": "تعذر تحميل الملف الشخصي",
+  "setYourName": "حدد اسمك",
+  "nameVisibleToContacts": "هذا هو الاسم الذي تراه جهات الاتصال الخاصة بك في رسائل التنبيه الإلكترونية",
+  "failedToLoadProfile": "فشل تحميل الملف الشخصي",
+  "nameRequired": "الاسم مطلوب"
 }

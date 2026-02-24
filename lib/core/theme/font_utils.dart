@@ -8,10 +8,7 @@ class FontUtils {
     return 'Courier';
   }
 
-  static String? getSentinelBrandFont(BuildContext context) {
-    final lang = Localizations.localeOf(context).languageCode;
-    if (lang == 'ar') return 'Alyamama';
-    if (lang == 'zh') return null;
+  static String getSentinelBrandFont() {
     return 'SentinelBrand';
   }
 }

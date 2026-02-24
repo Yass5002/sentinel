@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentinel/core/storage/preferences_service.dart';
 import 'package:sentinel/core/theme/app_theme.dart';
+import 'package:sentinel/core/theme/text_style_helper.dart';
 import 'package:sentinel/core/services/location_tracking_provider.dart';
 import 'package:sentinel/core/widgets/custom_error_widget.dart';
 import 'package:sentinel/features/events/presentation/event_providers.dart';
@@ -363,9 +364,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.appTitle,
-          style: const TextStyle(
+          style: TextStyle(
+            fontFamily: '',
             fontWeight: FontWeight.bold,
-            letterSpacing: 2.0,
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
             fontSize: 20,
           ),
         ),
@@ -383,10 +385,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
             child: Text(
               AppLocalizations.of(context)!.helpTitle.toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
+                letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
               ),
             ),
           ),
@@ -421,7 +423,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       )!.noEventCreatedYet.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.3),
-                        letterSpacing: 1.5,
+                        letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
                       ),
                     ),
                   ],
@@ -467,10 +469,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 AppLocalizations.of(
                                   context,
                                 )!.loadMore.toUpperCase(),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppTheme.primaryColor,
                                   fontWeight: FontWeight.bold,
-                                  letterSpacing: 2.0,
+                                  letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
                                 ),
                               ),
                             ),
