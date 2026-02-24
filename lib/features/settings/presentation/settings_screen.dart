@@ -308,15 +308,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.settings,
-          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
+          style: TextStyle(
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
+            fontSize: 16,
+          ),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
-          icon: Icon(
-            Directionality.of(context) == TextDirection.rtl
-                ? Icons.arrow_forward_sharp
-                : Icons.arrow_back_sharp,
-          ),
+          icon: const Icon(Icons.arrow_back_sharp),
           onPressed: () => context.pop(),
         ),
       ),
@@ -360,12 +359,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 );
               },
             ),
-            trailing: Icon(
-              Directionality.of(context) == TextDirection.rtl
-                  ? Icons.arrow_back_ios_sharp
-                  : Icons.arrow_forward_ios_sharp,
+            trailing: const Icon(
+              Icons.chevron_right,
               color: Colors.grey,
-              size: 16,
+              size: 20,
             ),
             onTap: _showLanguagePicker,
           ),
@@ -626,13 +623,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               label,
               style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
-            Icon(
-              Directionality.of(context) == TextDirection.rtl
-                  ? Icons.arrow_back_ios_sharp
-                  : Icons.arrow_forward_ios_sharp,
-              color: Colors.white.withValues(alpha: 0.3),
-              size: 14,
-            ),
+            const Icon(Icons.chevron_right, color: Colors.white, size: 18),
           ],
         ),
       ),

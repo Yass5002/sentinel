@@ -21,7 +21,10 @@ class ContactsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.contacts.toUpperCase(),
-          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
+          style: TextStyle(
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
+            fontSize: 16,
+          ),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(

@@ -131,7 +131,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.2),
+                          letterSpacing: TextStyleHelper.getLetterSpacing(
+                            context,
+                            1.2,
+                          ),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -408,7 +411,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                             fontFamily: FontUtils.getCourierFont(context),
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.0),
+                            letterSpacing: TextStyleHelper.getLetterSpacing(
+                              context,
+                              1.0,
+                            ),
                           ),
                         ),
                       ),

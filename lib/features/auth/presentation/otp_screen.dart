@@ -207,55 +207,55 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
                             children: [
                               if (index == 3) const SizedBox(width: 16),
                               SizedBox(
-                              width: 44, // Adjust width to fit 6 + gap
-                              height: 56,
-                              child: TextFormField(
-                                key: ValueKey(
-                                  'otp_$index',
-                                ), // Maintain identity on rebuilds
-                                controller: _controllers[index],
-                                focusNode: _focusNodes[index],
-                                keyboardType: TextInputType.number,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                  height:
-                                      1.0, // Prevent extra vertical padding from font metrics
-                                ),
-                                maxLength: 1,
-                                onChanged: (value) =>
-                                    _onDigitEntered(index, value),
-                                decoration: const InputDecoration(
-                                  counterText: '',
-                                  filled: true,
-                                  fillColor: AppTheme.darkSurface, // #333333
-                                  contentPadding: EdgeInsets
-                                      .zero, // Prevent clipping in narrow field
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.zero,
-                                    borderSide: BorderSide.none,
+                                width: 44, // Adjust width to fit 6 + gap
+                                height: 56,
+                                child: TextFormField(
+                                  key: ValueKey(
+                                    'otp_$index',
+                                  ), // Maintain identity on rebuilds
+                                  controller: _controllers[index],
+                                  focusNode: _focusNodes[index],
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.white,
+                                    height:
+                                        1.0, // Prevent extra vertical padding from font metrics
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.zero,
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: UnderlineInputBorder(
-                                    // Orange bottom border active
-                                    borderSide: BorderSide(
-                                      color: AppTheme.primaryColor,
-                                      width: 2,
+                                  maxLength: 1,
+                                  onChanged: (value) =>
+                                      _onDigitEntered(index, value),
+                                  decoration: const InputDecoration(
+                                    counterText: '',
+                                    filled: true,
+                                    fillColor: AppTheme.darkSurface, // #333333
+                                    contentPadding: EdgeInsets
+                                        .zero, // Prevent clipping in narrow field
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.zero,
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.zero,
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      // Orange bottom border active
+                                      borderSide: BorderSide(
+                                        color: AppTheme.primaryColor,
+                                        width: 2,
+                                      ),
                                     ),
                                   ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                 ),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
                               ),
-                            ),
-                          ],
-                        );
-                      }),
+                            ],
+                          );
+                        }),
                       ),
                     ),
                   ),

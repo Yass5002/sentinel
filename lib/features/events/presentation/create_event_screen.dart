@@ -128,7 +128,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.newSentinel,
-          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
+          style: TextStyle(
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
+            fontSize: 16,
+          ),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
@@ -321,7 +324,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: TextStyleHelper.getLetterSpacing(context, 1.5),
+                                letterSpacing: TextStyleHelper.getLetterSpacing(
+                                  context,
+                                  1.5,
+                                ),
                               ),
                             ),
                     ),

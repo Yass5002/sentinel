@@ -38,7 +38,10 @@ class HelpScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.helpTitle.toUpperCase(),
-          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
+          style: TextStyle(
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
+            fontSize: 16,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,

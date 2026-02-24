@@ -20,7 +20,10 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.profile,
-          style: TextStyle(letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0), fontSize: 16),
+          style: TextStyle(
+            letterSpacing: TextStyleHelper.getLetterSpacing(context, 2.0),
+            fontSize: 16,
+          ),
         ),
         backgroundColor: Colors.black,
         leading: IconButton(
@@ -77,7 +80,9 @@ class ProfileScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      user.name.isNotEmpty ? user.name : AppLocalizations.of(context)!.setYourName,
+                      user.name.isNotEmpty
+                          ? user.name
+                          : AppLocalizations.of(context)!.setYourName,
                       style: TextStyle(
                         color: user.name.isNotEmpty
                             ? Colors.white
