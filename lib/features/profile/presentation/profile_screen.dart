@@ -29,11 +29,9 @@ class ProfileScreen extends ConsumerWidget {
       body: profileAsync.when(
         data: (user) {
           if (user == null) {
-            return const Center(
-              child: Text(
-                'Unable to load profile',
-                style: TextStyle(color: Colors.white70),
-              ),
+            return CustomErrorWidget(
+              message: 'Unable to load profile',
+              onRetry: () => ref.invalidate(profileNotifierProvider),
             );
           }
 
