@@ -51,6 +51,7 @@ dependencies:
   path_provider: ^2.1.5
   open_file: ^3.5.11
   flag: ^7.0.2
+  google_fonts: ^8.0.2
 
 dev_dependencies:
   flutter_test:
@@ -77,3 +78,6 @@ flutter:
     - family: SentinelBrand
       fonts:
         - asset: assets/fonts/Radically Changed Demo.ttf
+    - family: Alyamama
+      fonts:
+        - asset: assets/fonts/Alyamama-VariableFont_wght.ttf

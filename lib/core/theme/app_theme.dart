@@ -15,13 +15,8 @@ class AppTheme {
 
   static const String brandFont = 'SentinelBrand';
 
-  // We explicitly only support the dark mode requested,
-  // but we keep the structure if light mode is ever needed (though user said "NO light theme").
-  // For safety, we can make lightTheme return darkTheme or strictly follow the request.
-  // User said: "NO light theme". So we will make both getters return the same dark style
-  // or just focus on dark. I'll maintain the method signature but force the style.
-
-  static ThemeData get darkTheme {
+  static ThemeData getTheme(Locale? locale) {
+    final bool isArabic = locale?.languageCode == 'ar';
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -78,12 +73,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.zero,
-          borderSide: BorderSide
-              .none, // "No outline borders" requested, usually active inputs might have one, but user said "No outline borders".
-          // However, for accessibility/usability, we might need some indication.
-          // User said: "Active state: Orange bottom border or white text highlight" for OTP.
-          // For generic inputs: "No outline borders". I will stick to none for now, but maybe add a bottom border if it feels wrong.
-          // Let's stick to "No outline borders" for the box itself.
+          borderSide: BorderSide.none,
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.zero,
@@ -108,10 +98,10 @@ class AppTheme {
         bodyLarge: TextStyle(color: whiteText),
         titleLarge: TextStyle(color: whiteText, fontWeight: FontWeight.bold),
       ),
-      fontFamily: null, // System font for UI
+      fontFamily: isArabic ? 'Alyamama' : null,
     );
   }
 
-  // Fallback / Alias
+  static ThemeData get darkTheme => getTheme(null);
   static ThemeData get lightTheme => darkTheme;
 }

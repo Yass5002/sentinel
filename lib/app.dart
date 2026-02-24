@@ -17,9 +17,9 @@ class SentinelApp extends ConsumerWidget {
     final locale = ref.watch(localeNotifierProvider);
 
     return MaterialApp.router(
-      title: 'Sentinel',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      title: 'SENTINEL',
+      theme: AppTheme.getTheme(locale),
+      darkTheme: AppTheme.getTheme(locale),
       themeMode: themeMode,
       locale: locale,
       localizationsDelegates: const [
