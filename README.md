@@ -1,4 +1,4 @@
-# Sentinel Mobile App
+# Sentinel Dead Man's Switch Frontend
 
 <p align="center">
   <img src="assets/screenshots/01_login_screen.png" width="150" hspace="5">
